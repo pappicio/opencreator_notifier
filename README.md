@@ -110,7 +110,7 @@ OpenCreator plugins are managed through the OpenCreator Plugin Manager.
 
 If the plugin files are available locally:
 
-    oc-plugin install [/path/to/opencreator_notifier](https://github.com/pappicio/opencreator_notifier)
+    oc-plugin install https://github.com/pappicio/opencreator_notifier
 
 
 
