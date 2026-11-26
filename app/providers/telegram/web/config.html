@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="page_title">Telegram Configuration - OpenCreator Notifier</title>
+<link rel="stylesheet" href="config.css">
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Telegram</h1>
+      <p data-i18n="description">Configure a Telegram notification destination</p>
+    </div>
+    <button type="button" class="secondary" id="backButton" data-i18n="back">Back</button>
+  </header>
+
+  <section class="card">
+    <h2 data-i18n="service_configuration">Service Configuration</h2>
+
+    <div class="field">
+      <label for="serviceName" data-i18n="service_name">Service Name</label>
+      <input id="serviceName" maxlength="80"
+             placeholder="e.g. Workshop Telegram" data-i18n-placeholder="service_name_placeholder" required>
+    </div>
+
+    <div class="field">
+      <label for="botToken" data-i18n="bot_token">Bot Token</label>
+      <div class="token-wrap">
+        <input id="botToken" type="password" autocomplete="off"
+               placeholder="123456789:ABC..." required>
+        <button type="button" class="token-toggle" id="toggleToken"
+                aria-label="Show bot token" title="Show bot token" data-i18n-title="show_token">👁</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="chatId" data-i18n="chat_id">Chat ID</label>
+      <input id="chatId" type="text" autocomplete="off"
+             placeholder="Telegram Chat ID" data-i18n-placeholder="chat_id_placeholder" required>
+    </div>
+
+    <label class="check">
+      <input id="enabled" type="checkbox" checked>
+      <span data-i18n="enabled">Enabled</span>
+    </label>
+
+    <div class="actions">
+      <button type="button" id="saveButton" data-i18n="save">Save Configuration</button>
+      <button type="button" class="secondary" id="testButton" disabled>
+        <span data-i18n="test">Test Notification</span>
+      </button>
+      <button type="button" class="secondary" id="cancelButton" data-i18n="cancel">
+        Cancel
+      </button>
+    </div>
+
+    <p id="notice" role="status"></p>
+  </section>
+</main>
+<script src="config.js"></script>
+</body>
+</html>

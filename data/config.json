@@ -1,0 +1,38 @@
+{
+  "services": [],
+  "name": "Creator 5",
+  "snapshot_url": "http://127.0.0.1:8080/?action=snapshot",
+  "send_photos": true,
+  "enable_service": true,
+  "moonraker_relay_active": true,
+  "events": {
+    "printer_started": true,
+    "started": true,
+    "paused": true,
+    "resumed": true,
+    "complete": true,
+    "error": true,
+    "cancelled": true
+  },
+  "progress_percent": 0,
+  "poll_interval": 5,
+  "macro_preferences": {
+    "BEEP": {
+      "enabled": false,
+      "notify": false,
+      "screenshot": false
+    },
+    "C5_STARTUP_TUNE": {
+      "enabled": true,
+      "notify": true,
+      "screenshot": true
+    },
+    "C5_PRINT_CANCEL_TUNE": {
+      "enabled": true,
+      "notify": true,
+      "screenshot": true
+    }
+  },
+  "web_refresh_interval": 5,
+  "language": "en"
+}

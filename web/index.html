@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenCreator Notifier</title>
+<style>
+:root{color-scheme:dark;font-family:Arial,sans-serif;background:#15191f;color:#e8edf2}
+body{margin:0;padding:24px;max-width:900px;margin:auto}
+h1{font-size:27px;margin-bottom:6px}
+.sub{color:#9ba8b5;margin-bottom:24px}
+.card{background:#202731;border:1px solid #35404d;border-radius:10px;padding:20px;margin:16px 0}
+h2{font-size:18px;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:block;font-size:14px;color:#b9c5d0;margin-bottom:7px}
+input,textarea,select{box-sizing:border-box;width:100%;padding:11px;background:#151b22;border:1px solid #465363;border-radius:6px;color:#fff;font-size:15px}
+textarea{min-height:75px;resize:vertical}
+.field{margin-bottom:14px}
+.token-control{display:flex;gap:8px;align-items:center}
+.token-control input{flex:1;min-width:0}
+.token-toggle{margin:0;min-width:46px;padding:9px}
+.check{display:flex;align-items:center;gap:10px;margin:12px 0}
+.check input{width:auto}
+button{border:0;border-radius:6px;padding:11px 17px;font-size:14px;font-weight:bold;cursor:pointer;background:#2785d7;color:white;margin:5px 7px 5px 0}
+button.secondary{background:#465363}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:#151b22;border-radius:7px;padding:13px}
+.stat small{display:block;color:#9ba8b5;margin-bottom:6px}
+.stat strong{overflow-wrap:anywhere}
+#notice{margin:12px 0;color:#83d69a;min-height:20px}
+.language-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.language-actions button{margin-left:0}
+#languageFile{display:none}
+#login{max-width:420px;margin:9vh auto}
+#loginError{color:#ff8585;min-height:22px;margin-top:10px}
+#app[hidden],#login[hidden]{display:none}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand-lockup{display:flex;align-items:center;gap:16px;min-width:0}
+.oc-logo{width:94px;height:58px;flex:0 0 auto;filter:drop-shadow(0 3px 8px #087bff55)}
+.brand-lockup h1{margin:0 0 6px}
+.brand-lockup .sub{margin:0}
+.service-card{background:#151b22;border:1px solid #465363;border-radius:8px;padding:15px;margin:12px 0}
+.service-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.service-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.service-actions button{margin:3px 0}
+.service-card .muted{margin-top:5px}
+.service-card button:disabled{opacity:.45;cursor:not-allowed}
+.provider-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.provider-card{background:#151b22;border:1px solid #465363;border-radius:8px;padding:15px}
+.provider-card p{color:#9ba8b5;min-height:38px}
+.service-actions .check{margin:0}
+
+
+
+.nav-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.nav-actions button{margin:0}
+.page-panel[hidden]{display:none}
+.macro-card{background:#151b22;border:1px solid #465363;border-radius:8px;padding:14px;margin:12px 0}
+.macro-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.macro-title h3{margin:0;font-size:17px;overflow-wrap:anywhere}
+.macro-meta{color:#9ba8b5;font-size:13px;margin:8px 0}
+.macro-controls{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.macro-controls .check{margin:0}
+.macro-warning{color:#ffb15c;background:#30261b;border:1px solid #75542d;padding:10px;border-radius:7px;margin:10px 0}
+.macro-editor textarea{min-height:420px;font-family:monospace;white-space:pre}
+.macro-toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.macro-search{display:flex;align-items:center;gap:9px;margin:14px 0}
+.macro-search input{flex:1;min-width:0}
+.macro-search button{margin:0;white-space:nowrap}
+.macro-search-count{color:#9ba8b5;font-size:13px;white-space:nowrap}
+@media(max-width:480px){.macro-search{flex-wrap:wrap}.macro-search input{flex-basis:100%}.macro-search-count{margin-left:2px}}
+.badge{display:inline-block;background:#465363;border-radius:5px;padding:3px 7px;font-size:12px}
+.badge.warning{background:#704d24;color:#ffd69a}
+@media(max-width:600px){.grid,.status{grid-template-columns:1fr}body{padding:14px}}
+</style>
+</head>
+<body>
+<section id="login" class="card" hidden>
+<div class="brand-lockup">
+<svg class="oc-logo" viewBox="0 0 112 64" role="img" aria-label="OpenCreator">
+  <circle cx="25" cy="32" r="20" fill="none" stroke="#2785d7" stroke-width="10"/>
+  <text x="49" y="52" font-family="Arial,sans-serif" font-size="60" font-weight="900" fill="#f1f5fb">C</text>
+</svg>
+<div><h1>OpenCreator Notifier</h1><div class="sub">OpenCreator · Creator 5</div></div></div>
+<h2 data-i18n="ssh_login">SSH Login</h2>
+<form id="loginForm">
+<div class="field">
+<label for="loginUsername" data-i18n="username">Username</label>
+<input id="loginUsername" name="username" autocomplete="username" required>
+</div>
+<div class="field">
+<label for="loginPassword" data-i18n="password">Password</label>
+<input id="loginPassword" name="password" type="password"
+       autocomplete="current-password" required>
+</div>
+<button type="submit" data-i18n="login">Login</button>
+<div id="loginError" role="alert"></div>
+</form>
+</section>
+
+<main id="app" hidden>
+<div class="topbar">
+<div class="brand-lockup">
+<svg class="oc-logo" viewBox="0 0 112 64" role="img" aria-label="OpenCreator">
+  <circle cx="25" cy="32" r="20" fill="none" stroke="#2785d7" stroke-width="10"/>
+  <text x="49" y="52" font-family="Arial,sans-serif" font-size="60" font-weight="900" fill="#f1f5fb">C</text>
+</svg>
+<div><h1 data-i18n="title">OpenCreator Notifier</h1><div class="sub" data-i18n="subtitle">OpenCreator · Creator 5</div></div></div>
+<button type="button" class="secondary" onclick="logout()" data-i18n="logout">Logout</button>
+</div>
+
+<section class="card">
+<h2 data-i18n="language_settings">Language Settings</h2>
+<div class="grid">
+<div class="field">
+<label for="language" data-i18n="language">Interface language</label>
+<select id="language"></select>
+</div>
+<div class="field">
+<label data-i18n="language_settings">Language Settings</label>
+<div class="language-actions">
+<button type="button" class="secondary" onclick="downloadLanguage()" data-i18n="download">Download language</button>
+<button type="button" class="secondary" onclick="document.getElementById('languageFile').click()" data-i18n="upload">Upload language</button>
+<input id="languageFile" type="file" accept=".json,application/json">
+</div>
+</div>
+</div>
+</section>
+
+<section class="card">
+<h2 data-i18n="macro_management">Macro Management</h2>
+<p class="sub" data-i18n="macro_management_intro">Manage existing printer macros and plugin-owned custom macros separately.</p>
+<div class="nav-actions">
+<button type="button" onclick="openMacroPage('existing')" data-i18n="existing_macros">Existing Macros</button>
+<button type="button" class="secondary" onclick="openMacroPage('custom')" data-i18n="custom_macros">Custom Macros</button>
+</div>
+</section>
+<section id="macroExistingPage" class="card page-panel" hidden>
+<div class="macro-title"><h2 data-i18n="existing_macros">Existing Macros</h2><div class="macro-toolbar"><button type="button" class="secondary" onclick="loadExistingMacros()" data-i18n="refresh">Refresh</button><button type="button" class="secondary" onclick="closeMacroPages()" data-i18n="back_main">Back to Main Page</button></div></div>
+<p class="sub" data-i18n="existing_macros_intro">Macros reachable from printer.cfg. The notifier.cfg custom-macro file is excluded.</p>
+<div class="macro-search"><input id="existingMacroSearch" type="search" data-i18n-placeholder="search_macros" placeholder="Search macros..." autocomplete="off" oninput="filterMacroList('existing')"><button type="button" class="secondary" onclick="clearMacroSearch('existing')" data-i18n="clear">Clear</button><span id="existingMacroCount" class="macro-search-count">0 macros</span></div>
+<div id="existingMacroNotice" role="status"></div><div id="existingMacroList"></div>
+<div class="macro-toolbar" style="margin-top:14px"><button type="button" class="secondary" onclick="loadExistingMacros()" data-i18n="refresh">Refresh</button><button type="button" class="secondary" onclick="closeMacroPages()" data-i18n="back_main">Back to Main Page</button></div>
+</section>
+<section id="macroCustomPage" class="card page-panel" hidden>
+<div class="macro-title"><h2 data-i18n="custom_macros">Custom Macros</h2><div class="macro-toolbar"><button type="button" class="secondary" onclick="loadCustomMacros()" data-i18n="refresh">Refresh</button><button type="button" class="secondary" onclick="closeMacroPages()" data-i18n="back_main">Back to Main Page</button></div></div>
+<p class="sub" data-i18n="custom_macros_intro">Custom macro definitions are stored in notifier/notifier.cfg, managed by this plugin.</p>
+<div class="macro-search"><input id="customMacroSearch" type="search" data-i18n-placeholder="search_macros" placeholder="Search macros..." autocomplete="off" oninput="filterMacroList('custom')"><button type="button" class="secondary" onclick="clearMacroSearch('custom')" data-i18n="clear">Clear</button><span id="customMacroCount" class="macro-search-count">0 macros</span></div>
+<div id="customMacroNotice" role="status"></div><div id="customMacroList"></div>
+<hr style="border:0;border-top:1px solid #35404d;margin:20px 0">
+<h3 id="customEditorTitle" data-i18n="create_custom_macro">Create Custom Macro</h3>
+<div class="field"><label for="customMacroName" data-i18n="macro_name">Macro Name</label><input id="customMacroName" data-i18n-placeholder="macro_name_placeholder" placeholder="MY_CUSTOM_MACRO"></div>
+<div class="field macro-editor"><label for="customMacroContent" data-i18n="macro_configuration">Klipper Macro Configuration</label><textarea id="customMacroContent" spellcheck="false" data-i18n-placeholder="macro_configuration_placeholder" placeholder="[gcode_macro EXAMPLE]
+gcode:
+  M117"></textarea></div>
+<div class="macro-toolbar"><button type="button" onclick="saveCustomMacro()" data-i18n="save_macro">Save Macro</button><button type="button" class="secondary" onclick="resetCustomEditor()" data-i18n="cancel_new">Cancel / New</button></div>
+<div class="macro-toolbar" style="margin-top:14px"><button type="button" class="secondary" onclick="loadCustomMacros()" data-i18n="refresh">Refresh</button><button type="button" class="secondary" onclick="closeMacroPages()" data-i18n="back_main">Back to Main Page</button></div>
+</section>
+
+<section class="card">
+<h2 data-i18n="printer_status">Printer Status</h2>
+<div class="status">
+<div class="stat"><small data-i18n="moonraker">Moonraker</small><strong id="connection">Loading...</strong></div>
+<div class="stat"><small data-i18n="print_state">Print State</small><strong id="state">-</strong></div>
+<div class="stat"><small data-i18n="file">File</small><strong id="filename">-</strong></div>
+<div class="stat"><small data-i18n="progress">Progress</small><strong id="progress">0%</strong></div>
+<div class="stat"><small data-i18n="last_event">Last Event</small><strong id="last_event">-</strong></div>
+</div>
+</section>
+
+<section class="card">
+<h2 data-i18n="notification_services">Notification Services</h2>
+<p class="muted" data-i18n="provider_intro">Choose a provider to add a notification destination. Each provider has its own configuration page.</p>
+
+<h3 data-i18n="available_providers">Available Providers</h3>
+<div id="provider_catalog" class="provider-grid"></div>
+
+<hr style="border:0;border-top:1px solid #35404d;margin:20px 0">
+<h3 data-i18n="configured_services">Configured Services</h3>
+<div id="service_list"></div>
+
+<hr style="border:0;border-top:1px solid #35404d;margin:20px 0">
+<h3 data-i18n="printer_notifications">Printer Notifications</h3>
+<div class="field">
+  <strong data-i18n="print_events">Print Events</strong>
+  <div class="grid" id="print_event_options">
+    <label class="check"><input id="event_printer_started" type="checkbox" checked> <span data-i18n="event_printer_started">Printer started</span></label>
+    <label class="check"><input id="event_started" type="checkbox" checked> <span data-i18n="event_started">Print started</span></label>
+    <label class="check"><input id="event_paused" type="checkbox" checked> <span data-i18n="event_paused">Print paused</span></label>
+    <label class="check"><input id="event_resumed" type="checkbox" checked> <span data-i18n="event_resumed">Print resumed</span></label>
+    <label class="check"><input id="event_complete" type="checkbox" checked> <span data-i18n="event_complete">Print completed</span></label>
+    <label class="check"><input id="event_error" type="checkbox" checked> <span data-i18n="event_error">Print error</span></label>
+    <label class="check"><input id="event_cancelled" type="checkbox" checked> <span data-i18n="event_cancelled">Print cancelled</span></label>
+  </div>
+</div>
+<div class="grid">
+  <div class="field">
+    <label for="name" data-i18n="printer_name">Printer Name</label>
+    <input id="name" value="Creator 5">
+  </div>
+  <div class="field">
+    <label for="progress_percent" data-i18n="progress_interval">Progress Notification Interval (%) · 0 disables</label>
+    <input id="progress_percent" type="number" min="0" max="100" value="0">
+  </div>
+  <div class="field">
+    <label for="poll_interval" data-i18n="poll_interval">Moonraker Poll Interval (seconds)</label>
+    <input id="poll_interval" type="number" min="2" max="30" value="3">
+  </div>
+  <div class="field">
+    <label for="web_refresh_interval" data-i18n="web_refresh_interval">Web UI Refresh Interval (seconds)</label>
+    <input id="web_refresh_interval" type="number" min="2" max="30" value="3">
+  </div>
+  <div class="field">
+    <label for="snapshot_url" data-i18n="webcam_url">Webcam Snapshot URL</label>
+    <input id="snapshot_url" value="http://127.0.0.1:8080/?action=snapshot">
+  </div>
+</div>
+<label class="check"><input id="send_photos" type="checkbox" checked> <span data-i18n="snapshots">Attach webcam snapshots to print events</span></label>
+<label class="check"><input id="enable_service" type="checkbox" checked> <span data-i18n="enable_service">Enable notification service (SOC mode only)</span></label>
+<div>
+  <button type="button" onclick="saveConfig()" data-i18n="save">Save Configuration</button>
+  <button type="button" class="secondary" onclick="testAllServices()" data-i18n="test_all">Test All Services</button>
+</div>
+<div id="notice" role="status"></div>
+</section>
+</main>
+
+<script>
+let currentPack = null;
+let currentLanguage = 'en';
+let languagePacks = [];
+let savedTokenConfigured = false;
+let tokenVisible = false;
+
+async function api(url, options={}) {
+  const response = await fetch(url, options);
+  const data = await response.json();
+  if (!response.ok || data.ok === false) throw new Error(data.error || response.statusText);
+  return data;
+}
+function tr(key, fallback = '') {
+  const value = currentPack && currentPack.interface
+    ? currentPack.interface[key] : null;
+  return typeof value === 'string' ? value : fallback;
+}
+
+function applyLanguage(pack) {
+  currentPack = pack;
+  currentLanguage = pack.code;
+  document.documentElement.lang = pack.code;
+  document.title = 'OpenCreator Notifier';
+  const tokenToggle = document.getElementById('tokenToggle');
+  if (tokenToggle && !tokenVisible) {
+    tokenToggle.title = pack.interface.show_token;
+    tokenToggle.setAttribute('aria-label', pack.interface.show_token);
+  }
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const value = pack.interface[el.dataset.i18n];
+    if (typeof value === 'string') el.textContent = value;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const value = pack.interface[el.dataset.i18nPlaceholder];
+    if (typeof value === 'string') el.placeholder = value;
+  });
+  if (typeof renderProviders === 'function') renderProviders();
+  if (typeof renderServices === 'function') renderServices();
+  if (typeof renderMacroRoute === 'function' &&
+      (window.location.hash === '#/existing' || window.location.hash === '#/custom')) {
+    renderMacroRoute();
+  }
+}
+async function loadLanguage(code) {
+  let pack;
+  try {
+    pack = await api('/api/languages/' + encodeURIComponent(code) + '.json');
+  } catch(e) {
+    if (code === 'en') throw e;
+    pack = await api('/api/languages/en.json');
+    code = 'en';
+  }
+  if (!pack || pack.version !== 2 || !pack.interface || !pack.notifications) throw new Error('Invalid language pack');
+  applyLanguage(pack);
+  document.getElementById('language').value = code;
+}
+async function refreshLanguages(selected) {
+  const data = await api('/api/languages');
+  languagePacks = data.languages || [];
+  const select = document.getElementById('language');
+  select.innerHTML = '';
+  languagePacks.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.code;
+    option.textContent = item.native_name + ' (' + item.code + ')';
+    select.appendChild(option);
+  });
+  if (!languagePacks.some(item => item.code === selected)) selected = 'en';
+  await loadLanguage(selected);
+}
+async function downloadLanguage() {
+  const response = await fetch('/api/languages/' + encodeURIComponent(currentLanguage) + '.json');
+  if (!response.ok) {
+    document.getElementById('notice').textContent = currentPack.interface.download_failed;
+    return;
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = currentLanguage + '.json';
+  link.click();
+  URL.revokeObjectURL(url);
+}
+async function uploadLanguage(file) {
+  try {
+    if (!file || file.size > 16384) throw new Error(currentPack.interface.invalid_file_size);
+    const pack = JSON.parse(await file.text());
+    await api('/api/languages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(pack)
+    });
+    await refreshLanguages(pack.code);
+    await api('/api/config', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({language:pack.code})
+    });
+    document.getElementById('notice').textContent =
+      currentPack.interface.upload_success || currentPack.interface.upload_success;
+  } catch(e) {
+    document.getElementById('notice').textContent = currentPack.interface.error_prefix + e.message;
+  }
+}
+async function refreshStatus() {
+  try {
+    const s = await api('/api/status');
+    const t = currentPack.interface;
+
+    const connectionMap = {
+      Connected: t.connection_connected,
+      Disconnected: t.connection_disconnected,
+      Starting: t.connection_starting,
+      Dormant: t.connection_dormant,
+      Disabled: t.connection_disabled
+    };
+
+    const stateMap = {
+      printing: t.state_printing,
+      paused: t.state_paused,
+      complete: t.state_complete,
+      error: t.state_error,
+      cancelled: t.state_cancelled,
+      standby: t.state_standby
+    };
+
+    const eventMap = {
+      Resumed: t.event_resumed,
+      'Print started': t.event_print_started,
+      Paused: t.event_paused,
+      Completed: t.event_completed,
+      Error: t.event_error,
+      Cancelled: t.event_cancelled
+    };
+
+    document.getElementById('connection').textContent =
+      connectionMap[s.connection] || s.connection || '-';
+
+    document.getElementById('state').textContent =
+      stateMap[String(s.state || '').toLowerCase()] || t.state_unknown;
+
+    document.getElementById('filename').textContent = s.filename || '-';
+
+    document.getElementById('last_event').textContent =
+      eventMap[s.last_event] || s.last_event || '-';
+    document.getElementById('progress').textContent = (s.progress || 0) + '%';
+  } catch(e) {}
+}
+function configureStatusTimer(seconds) {
+  const interval = Math.max(2, Math.min(30, Math.floor(Number(seconds) || 3)));
+
+  if (window.statusTimer) {
+    clearInterval(window.statusTimer);
+    window.statusTimer = null;
+  }
+
+  if (!document.getElementById('app').hidden)
+    window.statusTimer = setInterval(refreshStatus, interval * 1000);
+}
+
+
+let providers = [];
+let services = [];
+
+async function loadProviders() {
+  const result = await api('/api/providers');
+  providers = result.providers || [];
+  renderProviders();
+}
+
+function renderProviders() {
+  const target = document.getElementById('provider_catalog');
+  target.innerHTML = '';
+
+  if (!providers.length) {
+    const empty = document.createElement('p');
+    empty.className = 'muted';
+    empty.textContent = tr('no_providers', 'No notification providers are currently installed.');
+    target.appendChild(empty);
+    return;
+  }
+
+  providers.forEach(provider => {
+    const card = document.createElement('div');
+    card.className = 'provider-card';
+
+    const title = document.createElement('strong');
+    const localized = (provider.translations || {})[currentLanguage] || {};
+    title.textContent = localized.name || provider.name;
+
+    const description = document.createElement('p');
+    description.textContent = localized.description || provider.description || '';
+
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.textContent = tr('add_service', 'Add Service');
+    add.addEventListener('click', () => {
+      window.location.href = provider.config_url + '?lang=' + encodeURIComponent(currentLanguage);
+    });
+
+    card.append(title, description, add);
+    target.appendChild(card);
+  });
+}
+
+function providerConfigUrl(service) {
+  const provider = providers.find(item => item.id === service.provider);
+  if (!provider) return null;
+  return provider.config_url + '?service_id=' + encodeURIComponent(service.id) +
+    '&lang=' + encodeURIComponent(currentLanguage);
+}
+
+function renderServices() {
+  const target = document.getElementById('service_list');
+  target.innerHTML = '';
+
+  if (!services.length) {
+    const empty = document.createElement('p');
+    empty.className = 'muted';
+    empty.textContent = tr('no_services', 'No notification services configured.');
+    target.appendChild(empty);
+    return;
+  }
+
+  services.forEach(service => {
+    const card = document.createElement('div');
+    card.className = 'service-card';
+
+    const head = document.createElement('div');
+    head.className = 'service-head';
+
+    const title = document.createElement('strong');
+    const provider = providers.find(item => item.id === service.provider);
+    title.textContent = service.name + ' · ' +
+      ((provider && provider.translations && provider.translations[currentLanguage] && provider.translations[currentLanguage].name) || (provider ? provider.name : service.provider));
+
+    const actions = document.createElement('div');
+    actions.className = 'service-actions';
+
+    const enabledLabel = document.createElement('label');
+    enabledLabel.className = 'check';
+
+    const enabled = document.createElement('input');
+    enabled.type = 'checkbox';
+    enabled.checked = service.enabled !== false;
+    enabled.addEventListener('change', () => {
+      updateService(service.id, {enabled: enabled.checked});
+    });
+    enabledLabel.append(enabled, document.createTextNode(tr('enabled', 'Enabled')));
+
+    const test = document.createElement('button');
+    test.type = 'button';
+    test.className = 'secondary';
+    test.textContent = tr('test', 'Test');
+    test.disabled = service.enabled === false;
+    test.addEventListener('click', () => testService(service.id));
+
+    const configure = document.createElement('button');
+    configure.type = 'button';
+    configure.className = 'secondary';
+    configure.textContent = tr('configure', 'Configure');
+    configure.disabled = !provider;
+    configure.addEventListener('click', () => {
+      const url = providerConfigUrl(service);
+      if (url) window.location.href = url;
+    });
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'secondary';
+    remove.textContent = tr('remove', 'Remove');
+    remove.addEventListener('click', () => removeService(service.id));
+
+    actions.append(enabledLabel, test, configure, remove);
+    head.append(title, actions);
+    card.appendChild(head);
+
+    const status = document.createElement('p');
+    status.className = 'muted';
+    status.textContent = service.enabled === false ? tr('disabled', 'Disabled') : tr('ready', 'Ready');
+    card.appendChild(status);
+
+    target.appendChild(card);
+  });
+}
+
+async function persistServices(nextServices) {
+  await api('/api/config', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({services: nextServices})
+  });
+  await loadConfig();
+}
+
+async function updateService(id, changes) {
+  const previous = services.map(item => ({...item}));
+  const next = services.map(item =>
+    item.id === id ? {...item, ...changes} : item
+  );
+
+  try {
+    await persistServices(next);
+    document.getElementById('notice').textContent = tr('service_updated', 'Service updated.');
+  } catch (error) {
+    services = previous;
+    renderServices();
+    document.getElementById('notice').textContent = tr('error_prefix', 'Error: ') + error.message;
+  }
+}
+
+async function removeService(id) {
+  if (!window.confirm(tr('confirm_remove', 'Remove this notification service?'))) return;
+
+  const next = services.filter(item => item.id !== id);
+  try {
+    await persistServices(next);
+    document.getElementById('notice').textContent = tr('service_removed', 'Service removed.');
+  } catch (error) {
+    document.getElementById('notice').textContent = tr('error_prefix', 'Error: ') + error.message;
+  }
+}
+
+async function testService(id) {
+  try {
+    await api('/api/test', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({service_id:id})
+    });
+    document.getElementById('notice').textContent = tr('test_queued', 'Test notification queued.');
+  } catch(error) {
+    document.getElementById('notice').textContent = tr('error_prefix', 'Error: ') + error.message;
+  }
+}
+
+async function testAllServices() {
+  try {
+    await api('/api/test', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({})
+    });
+    document.getElementById('notice').textContent = tr('tests_queued', 'Test notifications queued.');
+  } catch(error) {
+    document.getElementById('notice').textContent = tr('error_prefix', 'Error: ') + error.message;
+  }
+}
+
+async function loadConfig() {
+  const c = await api('/api/config');
+  await refreshLanguages(c.language || 'en');
+  await loadProviders();
+
+  services = Array.isArray(c.services) ? c.services : [];
+
+  for (const key of ['name','snapshot_url','progress_percent','poll_interval','web_refresh_interval'])
+    document.getElementById(key).value = c[key] ?? '';
+
+  for (const key of ['send_photos','enable_service'])
+    document.getElementById(key).checked = !!c[key];
+
+  const events = c.events || {};
+  for (const key of ['printer_started','started','paused','resumed','complete','error','cancelled'])
+    document.getElementById('event_' + key).checked = events[key] !== false;
+
+  renderServices();
+  configureStatusTimer(c.web_refresh_interval);
+}
+
+async function saveConfig() {
+  const payload = {
+    name: document.getElementById('name').value,
+    progress_percent: Number(document.getElementById('progress_percent').value),
+    poll_interval: Number(document.getElementById('poll_interval').value),
+    web_refresh_interval: Math.max(2, Math.min(30,
+      Math.floor(Number(document.getElementById('web_refresh_interval').value) || 3))),
+    snapshot_url: document.getElementById('snapshot_url').value,
+    send_photos: document.getElementById('send_photos').checked,
+    enable_service: document.getElementById('enable_service').checked,
+    events: Object.fromEntries(
+      ['printer_started','started','paused','resumed','complete','error','cancelled']
+        .map(key => [key, document.getElementById('event_' + key).checked])
+    ),
+    language: currentLanguage
+  };
+
+  try {
+    await api('/api/config', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    document.getElementById('notice').textContent = tr('configuration_saved', 'Configuration saved.');
+    await loadConfig();
+  } catch(error) {
+    document.getElementById('notice').textContent = tr('error_prefix', 'Error: ') + error.message;
+  }
+}
+
+document.getElementById('language').addEventListener('change', async e => {
+  try {
+    await loadLanguage(e.target.value);
+    await api('/api/config', {
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({language:currentLanguage})
+    });
+    document.getElementById('notice').textContent = currentPack.interface.language_changed;
+  } catch(err) {
+    document.getElementById('notice').textContent = currentPack.interface.error_prefix + err.message;
+  }
+});
+document.getElementById('languageFile').addEventListener('change', e => {
+  uploadLanguage(e.target.files[0]);
+  e.target.value = '';
+});
+let existingMacroData = {macros:[],warnings:[],file_count:0};
+let existingMacroPreferences = {};
+let customMacroData = [];
+let customMacroPreferences = {};
+let editingCustomMacro = null;
+
+function openMacroPage(page) {
+  if (page !== 'existing' && page !== 'custom') return;
+  const target = '#/' + page;
+  if (window.location.hash === target) renderMacroRoute();
+  else window.location.hash = target;
+}
+function closeMacroPages() {
+  if (window.location.hash) window.location.hash = '';
+  else renderMacroRoute();
+}
+function renderMacroRoute() {
+  const route = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+  const page = route === 'existing' || route === 'custom' ? route : 'main';
+  document.querySelectorAll('main > section').forEach(section => {
+    if (page === 'main') {
+      section.hidden = section.id === 'macroExistingPage' || section.id === 'macroCustomPage';
+    } else {
+      section.hidden = section.id !== (page === 'existing' ? 'macroExistingPage' : 'macroCustomPage');
+    }
+  });
+  if (page === 'existing') loadExistingMacros();
+  if (page === 'custom') { loadExistingMacros(); loadCustomMacros(); }
+  window.scrollTo({top:0,behavior:'auto'});
+}
+window.addEventListener('hashchange', renderMacroRoute);
+function safeText(value) { return String(value ?? ''); }
+async function loadExistingMacros() {
+  const target=document.getElementById('existingMacroList'), notice=document.getElementById('existingMacroNotice');
+  target.innerHTML=''; notice.textContent=tr('loading','Loading…');
+  try {
+    const data=await api('/api/macros/existing');
+    let prefs={preferences:{}};
+    try { prefs=await api('/api/macros/preferences'); }
+    catch(e) { console.warn('Macro preferences could not be loaded:',e); }
+    const scan=(data && data.macros && !Array.isArray(data.macros)) ? data.macros : data;
+    existingMacroData=scan || {macros:[],warnings:[],file_count:0};
+    existingMacroPreferences=prefs.preferences&&typeof prefs.preferences==='object'?prefs.preferences:{};
+    const definitions=Array.isArray(existingMacroData.macros)?existingMacroData.macros:[];
+    const grouped=new Map();
+    definitions.forEach(m=>{
+      const name=m.name || '(unnamed macro)';
+      const key=normalizeMacroName(name);
+      if(!grouped.has(key)) grouped.set(key,{...m,files:[]});
+      const item=grouped.get(key);
+      const source=`${m.file || ''}${m.line ? ':'+m.line : ''}`;
+      if(source && !item.files.includes(source)) item.files.push(source);
+    });
+    const macros=Array.from(grouped.values());
+    notice.textContent=(existingMacroData.file_count ?? '')+' '+tr('configuration_files_scanned','configuration files scanned')+' · '+macros.length+' '+tr('unique_macros','unique macros');
+    if(existingMacroData.warnings?.length) {
+      const warn=document.createElement('div');
+      warn.className='macro-warning';
+      warn.textContent=existingMacroData.warnings.map(w=>`${w.file}: ${w.error}`).join(' | ');
+      target.appendChild(warn);
+    }
+    if(!macros.length){filterMacroList('existing');return;}
+    macros.forEach(m=>{
+      const name=m.name || '(unnamed macro)', key=normalizeMacroName(name);
+      const pref=existingMacroPreferences[key] || {enabled:false,notify:false,screenshot:false};
+      const card=document.createElement('div');
+      card.className='macro-card';
+      card.dataset.macroName=String(name).toLowerCase();
+      const head=document.createElement('div');
+      head.className='macro-title';
+      const title=document.createElement('h3');
+      title.textContent=name;
+      head.appendChild(title);
+      if(m.files.length>1){
+        const b=document.createElement('span');
+        b.className='badge warning';
+        b.textContent=`${m.files.length} ${tr('definitions','definitions')}`;
+        head.appendChild(b);
+      }
+      const meta=document.createElement('div');
+      meta.className='macro-meta';
+      meta.textContent=m.files.join(' · ');
+      const controls=document.createElement('div');
+      controls.className='macro-controls';
+      [[tr('macro_enabled','Enabled'),'enabled'],[tr('macro_notify','Notify'),'notify'],[tr('macro_screenshot','Screenshot'),'screenshot']].forEach(([label,field])=>{
+        const wrap=document.createElement('label');
+        wrap.className='check';
+        const cb=document.createElement('input');
+        cb.type='checkbox';
+        cb.checked=!!pref[field];
+        cb.disabled=field!=='enabled'&&!pref.enabled;
+        cb.dataset.macroKey=key;
+        cb.dataset.prefField=field;
+        cb.dataset.macroName=name;
+        cb.addEventListener('change',()=>saveExistingMacroPreference(name,'',false,field,cb.checked));
+        wrap.append(cb,document.createTextNode(label));
+        controls.appendChild(wrap);
+      });
+      card.append(head,meta,controls);
+      target.appendChild(card);
+    });
+    filterMacroList('existing');
+  } catch(e){notice.textContent='Error: '+e.message;}
+}
+function filterMacroList(kind){
+  const custom=kind==='custom';
+  const prefix=custom?'custom':'existing';
+  const input=document.getElementById(prefix+'MacroSearch');
+  const target=document.getElementById(prefix+'MacroList');
+  const count=document.getElementById(prefix+'MacroCount');
+  if(!input||!target||!count)return;
+  const query=input.value.trim().toLowerCase();
+  const cards=Array.from(target.querySelectorAll('.macro-card'));
+  let visible=0;
+  cards.forEach(card=>{
+    const matches=(card.dataset.macroName||'').includes(query);
+    card.hidden=!matches;
+    if(matches)visible++;
+  });
+  let empty=target.querySelector('.macro-search-empty');
+  if(!empty){
+    empty=document.createElement('p');
+    empty.className='macro-search-empty';
+    empty.style.color='#9ba8b5';
+    target.appendChild(empty);
+  }
+  empty.hidden=cards.length>0&&visible>0;
+  empty.textContent=cards.length===0
+    ?(custom?tr('no_custom_macros','No custom macros yet.'):tr('no_existing_macros','No reachable macro definitions found.'))
+    :tr('no_matching_macros','No matching macros found.');
+  count.textContent=`${visible} ${tr('of','of')} ${cards.length} ${tr('macros','macros')}`;
+}
+function clearMacroSearch(kind){
+  const prefix=kind==='custom'?'custom':'existing';
+  const input=document.getElementById(prefix+'MacroSearch');
+  if(!input)return;
+  input.value='';
+  filterMacroList(kind);
+  input.focus();
+}
+
+function existingMacroKey(name){return normalizeMacroName(name);}
+function existingMacroPref(name){
+  return existingMacroPreferences[existingMacroKey(name)]
+    || {enabled:false,notify:false,screenshot:false};
+}
+function syncExistingMacroPreferenceControls(){
+  document.querySelectorAll('#existingMacroList input[data-macro-key]').forEach(cb=>{
+    const d=cb.dataset,pref=existingMacroPref(d.macroName);
+    const field=d.prefField;
+    cb.checked=!!pref[field];
+    cb.disabled=field!=='enabled'&&!pref.enabled;
+  });
+}
+async function saveExistingMacroPreference(name,file,duplicated,field,value){
+  const notice=document.getElementById('existingMacroNotice');
+  const next={...existingMacroPref(name),[field]:!!value};
+  if(field==='enabled'&&!value){next.notify=false;next.screenshot=false;}
+  try{
+    const result=await api('/api/macros/preferences',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,preferences:next})});
+    existingMacroPreferences=result.preferences||{};
+    syncExistingMacroPreferenceControls();
+    notice.textContent=`${name}: ${tr('preferences_saved','preferences saved.')}`;notice.className='';
+  }catch(e){
+    syncExistingMacroPreferenceControls();
+    notice.textContent=tr('preference_save_failed','Preference save failed: ') + e.message;notice.className='macro-warning';
+  }
+}
+async function loadCustomMacros() {
+  const target=document.getElementById('customMacroList'),notice=document.getElementById('customMacroNotice');target.innerHTML='';notice.textContent=tr('loading','Loading…');
+  try {
+    const data=await api('/api/macros/custom');
+    let prefs={preferences:{}};
+    try { prefs=await api('/api/macros/preferences'); }
+    catch(e) { console.warn('Macro preferences could not be loaded:',e); }
+    customMacroData=Array.isArray(data.macros)?data.macros:[];
+    customMacroPreferences=prefs.preferences&&typeof prefs.preferences==='object'?prefs.preferences:{};
+    notice.textContent=`${customMacroData.length} ${tr('custom_macros_saved','custom macro(s) saved')}`;
+    if(!customMacroData.length){filterMacroList('custom');return;}
+    customMacroData.forEach(m=>{
+      const key=normalizeMacroName(m.name),pref=customMacroPreferences[key]||{enabled:true,notify:true,screenshot:false};
+      const card=document.createElement('div');card.className='macro-card';card.dataset.macroName=String(m.name||'').toLowerCase();
+      const h=document.createElement('div');h.className='macro-title';const title=document.createElement('h3');title.textContent=m.name;h.appendChild(title);
+      const actions=document.createElement('div');actions.className='macro-toolbar';
+      const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent=tr('edit','Edit');edit.onclick=()=>editCustomMacro(m.name);
+      const del=document.createElement('button');del.type='button';del.className='secondary';del.textContent=tr('delete','Delete');del.onclick=()=>deleteCustomMacro(m.name);
+      actions.append(edit,del);h.append(actions);
+      const controls=document.createElement('div');controls.className='macro-controls';
+      [[tr('macro_enabled','Enabled'),'enabled'],[tr('macro_notify','Notify'),'notify'],[tr('macro_screenshot','Screenshot'),'screenshot']].forEach(([label,field])=>{
+        const wrap=document.createElement('label');wrap.className='check';const cb=document.createElement('input');cb.type='checkbox';cb.checked=!!pref[field];cb.onchange=()=>saveCustomMacroPreference(m.name,field,cb.checked,cb);wrap.append(cb,document.createTextNode(label));controls.appendChild(wrap);
+      });
+      const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent=tr('view_macro_code','View macro code');const pre=document.createElement('pre');pre.style.whiteSpace='pre-wrap';pre.style.overflowWrap='anywhere';pre.textContent=m.content||'';details.append(summary,pre);
+      card.append(h,controls,details);target.appendChild(card);
+    });
+    filterMacroList('custom');
+  }catch(e){notice.textContent='Error: '+e.message;}
+}
+async function saveCustomMacroPreference(name,field,value,control){
+  const notice=document.getElementById('customMacroNotice'),key=normalizeMacroName(name);
+  const previous=customMacroPreferences[key]||{enabled:true,notify:true,screenshot:false};
+  const next={...previous,[field]:!!value};
+  try{
+    const result=await api('/api/macros/preferences',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,preferences:next})});
+    customMacroPreferences[key]=result.preferences[key]||next;notice.textContent=`${name}: ${tr('macro_setting_saved','setting saved.')}`;
+  }catch(e){control.checked=!value;notice.textContent=tr('preference_save_failed','Preference save failed: ') + e.message;notice.className='macro-warning';}
+}
+function resetCustomEditor(){editingCustomMacro=null;document.getElementById('customEditorTitle').textContent=tr('create_custom_macro','Create Custom Macro');document.getElementById('customMacroName').value='';document.getElementById('customMacroContent').value='';}
+function editCustomMacro(name){const item=customMacroData.find(m=>m.name===name);if(!item)return;editingCustomMacro=name;document.getElementById('customEditorTitle').textContent=tr('edit_custom_macro','Edit Custom Macro');document.getElementById('customMacroName').value=item.name;document.getElementById('customMacroContent').value=item.content;document.getElementById('customMacroName').focus();}
+function normalizeMacroName(name){return String(name||'').trim().toUpperCase();}
+async function saveCustomMacro(){
+  const notice=document.getElementById('customMacroNotice'),name=document.getElementById('customMacroName').value.trim(),content=document.getElementById('customMacroContent').value;
+  if(!name){notice.textContent=tr('macro_name_required','Macro name is required.');return;}
+  const nameKey=normalizeMacroName(name);
+  const existing=(existingMacroData.macros||[]).find(m=>normalizeMacroName(m.name)===nameKey);
+  if(existing){notice.textContent=`${tr('macro_name_exists','Name already exists in Existing Macros')}: ${existing.name} (${existing.file}:${existing.line}). ${tr('choose_another_name','Choose another name.')}`;notice.className='macro-warning';return;}
+  const collision=customMacroData.find(m=>normalizeMacroName(m.name)===nameKey && m.name!==editingCustomMacro);
+  if(collision){notice.textContent=`${tr('custom_macro_exists','Custom macro')} “${collision.name}” ${tr('duplicate_blocked','already exists. Duplicate creation blocked.')}`;notice.className='macro-warning';return;}
+  if(!content.trim()){notice.textContent=tr('macro_configuration_empty','Macro configuration cannot be empty.');return;}
+  const newItem={name,content};let next;
+  if(editingCustomMacro){next=customMacroData.map(m=>m.name===editingCustomMacro?newItem:m);}else next=[...customMacroData,newItem];
+  try{const result=await api('/api/macros/custom',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({macros:next})});customMacroData=Array.isArray(result.macros)?result.macros:next;notice.textContent=tr('custom_macro_saved','Custom macro saved.');notice.className='';resetCustomEditor();await loadCustomMacros();}
+  catch(e){notice.textContent=tr('save_failed','Save failed: ') + e.message;notice.className='macro-warning';}
+}
+async function deleteCustomMacro(name){if(!confirm(`${tr('confirm_delete_macro','Delete custom macro')} ${name}?`))return;const next=customMacroData.filter(m=>m.name!==name);try{const result=await api('/api/macros/custom',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({macros:next})});customMacroData=result.macros||next;if(editingCustomMacro===name)resetCustomEditor();await loadCustomMacros();document.getElementById('customMacroNotice').textContent=tr('macro_deleted','Macro deleted.');}catch(e){document.getElementById('customMacroNotice').textContent=tr('delete_failed','Delete failed: ') + e.message;}}
+
+async function initialize() {
+  const login = document.getElementById('login');
+  const app = document.getElementById('app');
+
+  try {
+    await api('/api/session');
+    login.hidden = true;
+    app.hidden = false;
+    await loadConfig();
+    await refreshStatus();
+    renderMacroRoute();
+
+  } catch(e) {
+    app.hidden = true;
+    login.hidden = false;
+    document.getElementById('loginUsername').focus();
+  }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const error = document.getElementById('loginError');
+  error.textContent = '';
+
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        username: document.getElementById('loginUsername').value,
+        password: document.getElementById('loginPassword').value
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || currentPack.interface.login_failed);
+
+    document.getElementById('loginPassword').value = '';
+    await initialize();
+  } catch(err) {
+    error.textContent = err.message || currentPack.interface.login_failed;
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginPassword').focus();
+  }
+});
+
+async function logout() {
+  try {
+    await fetch('/api/logout', {method: 'POST'});
+  } finally {
+    if (window.statusTimer) {
+      clearInterval(window.statusTimer);
+      window.statusTimer = null;
+    }
+    document.getElementById('app').hidden = true;
+    document.getElementById('login').hidden = false;
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginUsername').focus();
+  }
+}
+
+initialize();
+</script>
+</body>
+</html>

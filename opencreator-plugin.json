@@ -1,0 +1,22 @@
+{
+  "id": "opencreator_notifier",
+  "name": "OpenCreator Notifier",
+  "version": "0.1.7",
+  "description": "Telegram notifications and printer monitoring for OpenCreator.",
+  "startup": [
+    {
+      "name": "opencreator-notifier",
+      "exec": "scripts/start.sh",
+      "type": "service"
+    }
+  ],
+  "scripts": {
+    "install": "scripts/install.sh",
+    "update": "scripts/update.sh",
+    "uninstall": "scripts/uninstall.sh"
+  },
+  "klippy_extras": [
+    "klippy/oc_notifier.py"
+  ],
+  "klipper_config": "config/oc_notifier.cfg"
+}
