@@ -110,11 +110,9 @@ OpenCreator plugins are managed through the OpenCreator Plugin Manager.
 
 If the plugin files are available locally:
 
-    oc-plugin install /path/to/opencreator_notifier
+    oc-plugin install https://github.com/pappicio/opencreator_notifier
 
-For example:
 
-    oc-plugin install /usr/data/opencreator/opencreator_notifier
 
 The Plugin Manager handles plugin installation and synchronization of the declared Klipper component and configuration files.
 
@@ -199,21 +197,21 @@ The plugin directory contains the application, frontend, configuration, Klipper 
 
     opencreator_notifier/
     +-- app/
-    ¦   +-- telegram_notify.py
+    Â¦   +-- telegram_notify.py
     +-- config/
-    ¦   +-- oc_notifier.cfg
+    Â¦   +-- oc_notifier.cfg
     +-- klippy/
-    ¦   +-- oc_notifier.py
+    Â¦   +-- oc_notifier.py
     +-- scripts/
-    ¦   +-- install.sh
-    ¦   +-- update.sh
-    ¦   +-- start.sh
-    ¦   +-- uninstall.sh
+    Â¦   +-- install.sh
+    Â¦   +-- update.sh
+    Â¦   +-- start.sh
+    Â¦   +-- uninstall.sh
     +-- web/
-    ¦   +-- index.html
-    ¦   +-- languages/
-    ¦       +-- en.json
-    ¦       +-- it.json
+    Â¦   +-- index.html
+    Â¦   +-- languages/
+    Â¦       +-- en.json
+    Â¦       +-- it.json
     +-- data/
     +-- logs/
     +-- backup/
