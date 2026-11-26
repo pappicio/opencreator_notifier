@@ -23,14 +23,14 @@
       "screenshot": false
     },
     "C5_STARTUP_TUNE": {
-      "enabled": true,
-      "notify": true,
-      "screenshot": true
+      "enabled": false,
+      "notify": false,
+      "screenshot": false
     },
     "C5_PRINT_CANCEL_TUNE": {
-      "enabled": true,
-      "notify": true,
-      "screenshot": true
+      "enabled": false,
+      "notify": false,
+      "screenshot": false
     }
   },
   "web_refresh_interval": 5,
