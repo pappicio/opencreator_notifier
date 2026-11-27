@@ -136,11 +136,11 @@ The installation process:
 
 If Klipper runs on an external Linux host (Raspberry Pi, Radxa, or another compatible system), an additional integration step is required.
 
-here:
+If Klipper runs on an external Linux host (Raspberry Pi, Radxa, or another compatible system), an additional integration step is required.
 
-```bash
-https://github.com/pappicio/opencreator_notifier/blob/main/tunneled_notifier_integration/install-tunneled-integration.sh
-```
+The installation script is available [here](https://github.com/pappicio/opencreator_notifier/blob/main/tunneled_notifier_integration/install-tunneled-integration.sh).
+
+The same script is also included in the OpenCreator Notifier plugin folder.
 
 and also included into plugin, so ypu can find it aldo into notifier plugin folder
 
