@@ -28,7 +28,7 @@ from logging.handlers import RotatingFileHandler
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
-LOG_FILE = os.path.join(DATA, "opencreator-notifier.log")
+LOG_FILE = "/tmp/opencreator-notifier.log"
 CONFIG_FILE = os.path.join(DATA, "config.json")
 CONFIG_DIR = "/usr/data/opencreator/klipper/config"
 MONITOR_STATE_FILE = os.path.join(DATA, "monitor-state.json")
