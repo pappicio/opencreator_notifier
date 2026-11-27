@@ -368,6 +368,9 @@ def send_notification(message, photo=False, service_ids=None):
         logger.info("Notification suppressed; service state: %s", runtime_state)
         return
 
+    mode_tag = "[Tunneled]" if runtime_state == "tunneled" else "[SOC]"
+    message = f"{mode_tag} {message}"
+
     services = cfg.get("services", [])
     if service_ids is not None:
         services = [s for s in services if s.get("id") in service_ids]
@@ -654,9 +657,20 @@ def monitor():
 
 
 def authenticate_moonraker_relay(handler):
-    """Authenticate local Moonraker requests using HTTP Basic."""
+    """Authenticate local and configured remote relay requests."""
     try:
-        if not ipaddress.ip_address(handler.client_address[0]).is_loopback:
+        client_ip = ipaddress.ip_address(handler.client_address[0])
+        allowed = client_ip.is_loopback
+
+        if not allowed:
+            api_config = "/usr/data/opencreator/api-server.json"
+            with open(api_config, "r", encoding="utf-8") as file:
+                settings = json.load(file)
+            remote_host = str(settings.get("remote_host", "")).strip()
+            if remote_host:
+                allowed = client_ip == ipaddress.ip_address(remote_host)
+
+        if not allowed:
             return False
 
         scheme, separator, encoded = handler.headers.get(

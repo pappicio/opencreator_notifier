@@ -130,6 +130,37 @@ The installation process:
 
 ---
 
+
+
+### Additional Installation for Tunneled Mode
+
+If Klipper runs on an external Linux host (Raspberry Pi, Radxa, or another compatible system), an additional integration step is required.
+
+1. Install OpenCreator Notifier on Creator 5 using the Plugin Manager.
+2. Copy `install-tunneled-integration.sh` from the repository to the external Klipper host.
+3. Run the script:
+
+```bash
+chmod +x install-tunneled-integration.sh
+./install-tunneled-integration.sh
+```
+
+The installer automatically detects the Creator 5 IP from the Klipper Mode Monitor configuration when available. Otherwise, it asks for the IP address and can save it in the Mode Monitor configuration.
+
+It then connects to Creator 5 over SSH and retrieves the Klipper integration component and its dedicated relay token.
+
+The installer configures the external Klipper host, adds the required include to `printer.base.cfg`, creates backups of modified files, verifies the installation, and offers to restart Klipper. Pressing Enter accepts the default restart.
+
+**Important:**
+- The installer modifies `printer.base.cfg`, never `printer.cfg`.
+- Notification provider credentials remain on Creator 5.
+- Apprise is not required on the external host.
+- This integration is required only for Tunneled Mode. SOC Mode works locally without it.
+
+After installation, execute a monitored macro on the external host to test notification delivery.
+
+
+
 ## Python Environment
 
 OpenCreator Notifier uses an isolated Python virtual environment located inside the plugin directory.

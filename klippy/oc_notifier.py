@@ -21,6 +21,10 @@ class OCNotifier:
         self.backend_url = config.get(
             "backend_url", "http://127.0.0.1:8888/api/macro-event"
         )
+        self.remote_mode = config.getboolean("remote_mode", False)
+        self.relay_token_file = config.get(
+            "relay_token_file", self.secrets_file
+        )
         self._cache_mtime = None
         self._preferences = {}
         self._queue = queue.Queue(maxsize=128)
@@ -47,6 +51,13 @@ class OCNotifier:
 
     def _enqueue_if_enabled(self, name):
         key = str(name).upper()
+        if self.remote_mode:
+            try:
+                self._queue.put_nowait(key)
+            except queue.Full:
+                logger.warning("Macro notification queue is full; skipped %s", key)
+            return
+
         prefs = self._get_preferences()
         pref = prefs.get(key)
         if pref is None:
@@ -66,7 +77,7 @@ class OCNotifier:
             logger.warning("Macro notification queue is full; skipped %s", key)
 
     def _relay_token(self):
-        with open(self.secrets_file, "r", encoding="utf-8") as file:
+        with open(self.relay_token_file, "r", encoding="utf-8") as file:
             data = json.load(file)
         token = data.get("opencreator_notifier", {}).get("_relay_token", "")
         if not isinstance(token, str) or not token:
