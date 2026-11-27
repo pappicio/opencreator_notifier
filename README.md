@@ -136,6 +136,14 @@ The installation process:
 
 If Klipper runs on an external Linux host (Raspberry Pi, Radxa, or another compatible system), an additional integration step is required.
 
+here:
+
+```bash
+https://github.com/pappicio/opencreator_notifier/blob/main/tunneled_notifier_integration/install-tunneled-integration.sh
+```
+
+and also included into plugin, so ypu can find it aldo into notifier plugin folder
+
 1. Install OpenCreator Notifier on Creator 5 using the Plugin Manager.
 2. Copy `install-tunneled-integration.sh` from the repository to the external Klipper host.
 3. Run the script:
@@ -228,21 +236,21 @@ The plugin directory contains the application, frontend, configuration, Klipper 
 
     opencreator_notifier/
     +-- app/
-    ¦   +-- telegram_notify.py
+    Â¦   +-- telegram_notify.py
     +-- config/
-    ¦   +-- oc_notifier.cfg
+    Â¦   +-- oc_notifier.cfg
     +-- klippy/
-    ¦   +-- oc_notifier.py
+    Â¦   +-- oc_notifier.py
     +-- scripts/
-    ¦   +-- install.sh
-    ¦   +-- update.sh
-    ¦   +-- start.sh
-    ¦   +-- uninstall.sh
+    Â¦   +-- install.sh
+    Â¦   +-- update.sh
+    Â¦   +-- start.sh
+    Â¦   +-- uninstall.sh
     +-- web/
-    ¦   +-- index.html
-    ¦   +-- languages/
-    ¦       +-- en.json
-    ¦       +-- it.json
+    Â¦   +-- index.html
+    Â¦   +-- languages/
+    Â¦       +-- en.json
+    Â¦       +-- it.json
     +-- data/
     +-- logs/
     +-- backup/
