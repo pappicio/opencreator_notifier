@@ -234,28 +234,99 @@ Sensitive information such as notification provider credentials should never be 
 
 The plugin directory contains the application, frontend, configuration, Klipper component, scripts, and runtime data.
 
-    opencreator_notifier/
-    +-- app/
-    ¦   +-- telegram_notify.py
-    +-- config/
-    ¦   +-- oc_notifier.cfg
-    +-- klippy/
-    ¦   +-- oc_notifier.py
-    +-- scripts/
-    ¦   +-- install.sh
-    ¦   +-- update.sh
-    ¦   +-- start.sh
-    ¦   +-- uninstall.sh
-    +-- web/
-    ¦   +-- index.html
-    ¦   +-- languages/
-    ¦       +-- en.json
-    ¦       +-- it.json
-    +-- data/
-    +-- logs/
-    +-- backup/
-    +-- apprise-venv/
-    +-- manifest.json
+opencreator_notifier/
++-- app/
+¦   +-- telegram_notify.py
+¦   +-- provider_manager.py
+¦   +-- macro_manager.py
+¦   +-- providers/
+¦       +-- discord/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- email_smtp/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- google_chat/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- gotify/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- matrix/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- mattermost/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- msteams/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- ntfy/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- pushover/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- slack/
+¦       ¦   +-- provider.py
+¦       ¦   +-- web/
+¦       ¦       +-- config.html
+¦       ¦       +-- config.css
+¦       ¦       +-- config.js
+¦       +-- telegram/
+¦           +-- provider.py
+¦           +-- web/
+¦               +-- config.html
+¦               +-- config.css
+¦               +-- config.js
++-- config/
+¦   +-- oc_notifier.cfg
++-- klippy/
+¦   +-- oc_notifier.py
++-- scripts/
+¦   +-- install.sh
+¦   +-- update.sh
+¦   +-- start.sh
+¦   +-- uninstall.sh
++-- web/
+¦   +-- index.html
+¦   +-- opencreator-logo.png
+¦   +-- languages/
+¦       +-- en.json
+¦       +-- it.json
++-- data/
++-- backup/
++-- manifest.json
++-- NOTICE
++-- LICENSE
++-- README.md
 
 The exact contents may change between plugin releases.
 
