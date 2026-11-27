@@ -3,7 +3,7 @@ set -eu
 
 PLUGIN_DIR="${OC_PLUGIN_DIR:-$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)}"
 BASE_PYTHON="/usr/data/python-hf/bin/python3"
-VENV="$PLUGIN_DIR/apprise-venv"
+VENV="/usr/data/opencreator/sunrise-venv"
 APPRISE_VERSION="2.3.0"
 MOONRAKER_DATA_DIR="${OC_MOONRAKER_DATA_DIR:-/usr/data/opencreator/klipper}"
 SECRET_FILE="$PLUGIN_DIR/data/moonraker.secrets"
@@ -86,11 +86,22 @@ echo ""
 CURRENT_STEP="Creating Python virtual environment"
 echo "[4/7] Creating Python virtual environment..."
 
-if [ ! -x "$VENV/bin/python" ]; then
+mkdir -p "$(dirname "$VENV")"
+
+if [ -L "$VENV" ]; then
+    echo "ERROR: Virtual environment path must not be a symlink: $VENV" >&2
+    exit 1
+fi
+
+if [ -x "$VENV/bin/python" ] && "$VENV/bin/python" -c "import sys" >/dev/null 2>&1; then
+    echo "Existing virtual environment found: $VENV"
+else
+    if [ -e "$VENV" ]; then
+        echo "Removing incomplete virtual environment: $VENV"
+        rm -rf "$VENV"
+    fi
     echo "Creating environment: $VENV"
     "$BASE_PYTHON" -m venv "$VENV"
-else
-    echo "Existing virtual environment found."
 fi
 
 "$VENV/bin/python" --version

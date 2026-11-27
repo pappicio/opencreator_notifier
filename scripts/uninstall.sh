@@ -2,7 +2,7 @@
 set -eu
 
 PLUGIN_DIR="${OC_PLUGIN_DIR:-$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)}"
-VENV="$PLUGIN_DIR/apprise-venv"
+VENV="/usr/data/opencreator/sunrise-venv"
 
 # Remove only the symlink owned by this plugin. Preserve the secrets file.
 MOONRAKER_DATA_DIR="${OC_MOONRAKER_DATA_DIR:-/usr/data/opencreator/klipper}"
