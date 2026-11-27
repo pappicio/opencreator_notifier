@@ -113,6 +113,8 @@
     "unique_macros": "unique macros",
     "definitions": "definitions",
     "macro_enabled": "Enabled",
+    "filter_disabled": "Disabled",
+    "filter_enabled": "Enabled",
     "macro_notify": "Notify",
     "macro_screenshot": "Screenshot",
     "no_custom_macros": "No custom macros yet.",

@@ -1,0 +1,217 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 28px 20px;
+    background: #15191f;
+    color: #e8edf2;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+.header,
+main {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 26px;
+}
+
+.brand {
+    color: #91a0b2;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+h1 {
+    margin: 8px 0;
+    font-size: 27px;
+}
+
+.header p {
+    margin: 0;
+    color: #aab5c2;
+    line-height: 1.5;
+}
+
+.card {
+    padding: 26px;
+    background: #202630;
+    border: 1px solid #303a47;
+    border-radius: 12px;
+}
+
+h2 {
+    margin: 0 0 24px;
+    font-size: 19px;
+}
+
+label:not(.checkbox-row) {
+    display: block;
+    margin: 18px 0 8px;
+    color: #cbd4df;
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    color: #e8edf2;
+    background: #15191f;
+    border: 1px solid #465363;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: 2px solid #5b9bd5;
+    outline-offset: 1px;
+}
+
+.secret-wrap {
+    display: flex;
+    gap: 8px;
+}
+
+.secret-wrap input {
+    flex: 1;
+    min-width: 0;
+}
+
+.secret-toggle {
+    min-width: 76px;
+    padding: 0 12px;
+    color: #dce5ef;
+    background: #303b49;
+    border: 1px solid #465363;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    color: #dce5ef;
+    cursor: pointer;
+}
+
+.checkbox-row input {
+    width: 17px;
+    height: 17px;
+    accent-color: #3987cf;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 26px;
+}
+
+.button {
+    min-height: 42px;
+    padding: 0 17px;
+    border: 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.primary {
+    color: #fff;
+    background: #2879bd;
+}
+
+.secondary {
+    color: #e1e8f0;
+    background: #354150;
+}
+
+#notice {
+    min-height: 20px;
+    margin: 18px 0 0;
+    font-size: 14px;
+}
+
+#notice.success {
+    color: #83d6a0;
+}
+
+#notice.error {
+    color: #ff8585;
+}
+
+@media (max-width: 560px) {
+    body {
+        padding: 20px 14px;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .card {
+        padding: 20px 16px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions .button {
+        width: 100%;
+    }
+}
+
+
+/* Shared OpenCreator provider branding */
+.provider-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+.oc-logo {
+    display: block;
+    width: 94px;
+    height: 58px;
+    flex: 0 0 auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 5px #0005);
+}
+.provider-brand > div {
+    min-width: 0;
+}
+.provider-brand h1 {
+    margin: 0 0 6px;
+}
+@media (max-width: 600px) {
+    .provider-brand {
+        gap: 10px;
+    }
+    .oc-logo {
+        width: 70px;
+        height: 44px;
+    }
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google Chat - OpenCreator</title>
+    <link rel="stylesheet" href="/providers/google_chat/web/config.css">
+</head>
+<body>
+    <header class="header">
+        <div class="provider-brand"><img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator"><div><h1>Google Chat</h1>
+            <p data-i18n="description">Send printer notifications to Google Chat.</p></div></div>
+        <button class="button secondary" id="backButton" data-i18n="back">Back</button>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2 data-i18n="service_configuration">Service Configuration</h2>
+
+            <label for="serviceName" data-i18n="service_name">Service Name</label>
+            <input id="serviceName" type="text" maxlength="80" required>
+
+            <label for="webhookUrl" data-i18n="webhook_url">Incoming Webhook URL</label>
+            <div class="secret-wrap">
+                <input id="webhookUrl" type="password" maxlength="2000"
+                       autocomplete="off" spellcheck="false" required>
+                <button type="button" class="secret-toggle" id="toggleWebhook"
+                        data-i18n="show">Show</button>
+            </div>
+
+            <label class="checkbox-row">
+                <input id="enabled" type="checkbox">
+                <span data-i18n="enabled">Enable notifications</span>
+            </label>
+
+            <div class="actions">
+                <button class="button primary" id="saveButton" data-i18n="save">Save Configuration</button>
+                <button class="button secondary" id="testButton" data-i18n="test" disabled>Test Notification</button>
+                <button class="button secondary" id="cancelButton" data-i18n="cancel">Cancel</button>
+            </div>
+
+            <p id="notice" role="status"></p>
+        </section>
+    </main>
+
+    <script src="/providers/google_chat/web/config.js"></script>
+</body>
+</html>

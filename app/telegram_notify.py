@@ -868,7 +868,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json({"error": "SSH login required"}, 401)
             return self.send_json({"ok": True, "username": username})
 
-        if route != "/" and not self.require_auth():
+        if route not in ("/", "/opencreator-logo.png") and not self.require_auth():
             return
 
         if route == "/":
@@ -911,6 +911,27 @@ class Handler(BaseHTTPRequestHandler):
                              "settings": service.get("settings", {}),
                              "enabled": service.get("enabled", True)} if service else None)
             })
+            return
+
+        if route == "/opencreator-logo.png":
+            path = os.path.realpath(os.path.join(ROOT, "web", "opencreator-logo.png"))
+            web_dir = os.path.realpath(os.path.join(ROOT, "web"))
+            if not path.startswith(web_dir + os.sep):
+                self.send_error(403)
+                return
+            try:
+                with open(path, "rb") as f:
+                    body = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("X-Content-Type-Options", "nosniff")
+                self.send_header("X-Frame-Options", "DENY")
+                self.end_headers()
+                self.wfile.write(body)
+            except OSError:
+                self.send_error(404)
             return
 
         if route.startswith("/providers/"):

@@ -149,6 +149,7 @@ async function saveConfiguration() {
     });
 
     showNotice(t('saved'));
+    alert(t('saved'));
     el('testButton').disabled = !payload.enabled;
 
     if (!serviceId && result.service_id) {

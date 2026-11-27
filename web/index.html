@@ -36,7 +36,7 @@ button.secondary{background:#465363}
 #app[hidden],#login[hidden]{display:none}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .brand-lockup{display:flex;align-items:center;gap:16px;min-width:0}
-.oc-logo{width:94px;height:58px;flex:0 0 auto;filter:drop-shadow(0 3px 8px #087bff55)}
+.oc-logo{width:94px;height:58px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 2px 5px #0005)}
 .brand-lockup h1{margin:0 0 6px}
 .brand-lockup .sub{margin:0}
 .service-card{background:#151b22;border:1px solid #465363;border-radius:8px;padding:15px;margin:12px 0}
@@ -77,10 +77,7 @@ button.secondary{background:#465363}
 <body>
 <section id="login" class="card" hidden>
 <div class="brand-lockup">
-<svg class="oc-logo" viewBox="0 0 112 64" role="img" aria-label="OpenCreator">
-  <circle cx="25" cy="32" r="20" fill="none" stroke="#2785d7" stroke-width="10"/>
-  <text x="49" y="52" font-family="Arial,sans-serif" font-size="60" font-weight="900" fill="#f1f5fb">C</text>
-</svg>
+<img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator">
 <div><h1>OpenCreator Notifier</h1><div class="sub">OpenCreator · Creator 5</div></div></div>
 <h2 data-i18n="ssh_login">SSH Login</h2>
 <form id="loginForm">
@@ -101,10 +98,7 @@ button.secondary{background:#465363}
 <main id="app" hidden>
 <div class="topbar">
 <div class="brand-lockup">
-<svg class="oc-logo" viewBox="0 0 112 64" role="img" aria-label="OpenCreator">
-  <circle cx="25" cy="32" r="20" fill="none" stroke="#2785d7" stroke-width="10"/>
-  <text x="49" y="52" font-family="Arial,sans-serif" font-size="60" font-weight="900" fill="#f1f5fb">C</text>
-</svg>
+<img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator">
 <div><h1 data-i18n="title">OpenCreator Notifier</h1><div class="sub" data-i18n="subtitle">OpenCreator · Creator 5</div></div></div>
 <button type="button" class="secondary" onclick="logout()" data-i18n="logout">Logout</button>
 </div>
@@ -139,6 +133,10 @@ button.secondary{background:#465363}
 <div class="macro-title"><h2 data-i18n="existing_macros">Existing Macros</h2><div class="macro-toolbar"><button type="button" class="secondary" onclick="loadExistingMacros()" data-i18n="refresh">Refresh</button><button type="button" class="secondary" onclick="closeMacroPages()" data-i18n="back_main">Back to Main Page</button></div></div>
 <p class="sub" data-i18n="existing_macros_intro">Macros reachable from printer.cfg. The notifier.cfg custom-macro file is excluded.</p>
 <div class="macro-search"><input id="existingMacroSearch" type="search" data-i18n-placeholder="search_macros" placeholder="Search macros..." autocomplete="off" oninput="filterMacroList('existing')"><button type="button" class="secondary" onclick="clearMacroSearch('existing')" data-i18n="clear">Clear</button><span id="existingMacroCount" class="macro-search-count">0 macros</span></div>
+<div class="macro-status-filter" style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 12px">
+<label class="check"><input id="existingMacroFilterEnabled" type="checkbox" checked onchange="filterMacroList('existing')"><span data-i18n="filter_enabled">Enabled</span></label>
+<label class="check"><input id="existingMacroFilterDisabled" type="checkbox" checked onchange="filterMacroList('existing')"><span data-i18n="filter_disabled">Disabled</span></label>
+</div>
 <div id="existingMacroNotice" role="status"></div><div id="existingMacroList"></div>
 <div class="macro-toolbar" style="margin-top:14px"><button type="button" class="secondary" onclick="loadExistingMacros()" data-i18n="refresh">Refresh</button><button type="button" class="secondary" onclick="closeMacroPages()" data-i18n="back_main">Back to Main Page</button></div>
 </section>
@@ -146,6 +144,10 @@ button.secondary{background:#465363}
 <div class="macro-title"><h2 data-i18n="custom_macros">Custom Macros</h2><div class="macro-toolbar"><button type="button" class="secondary" onclick="loadCustomMacros()" data-i18n="refresh">Refresh</button><button type="button" class="secondary" onclick="closeMacroPages()" data-i18n="back_main">Back to Main Page</button></div></div>
 <p class="sub" data-i18n="custom_macros_intro">Custom macro definitions are stored in notifier/notifier.cfg, managed by this plugin.</p>
 <div class="macro-search"><input id="customMacroSearch" type="search" data-i18n-placeholder="search_macros" placeholder="Search macros..." autocomplete="off" oninput="filterMacroList('custom')"><button type="button" class="secondary" onclick="clearMacroSearch('custom')" data-i18n="clear">Clear</button><span id="customMacroCount" class="macro-search-count">0 macros</span></div>
+<div class="macro-status-filter" style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 12px">
+<label class="check"><input id="customMacroFilterEnabled" type="checkbox" checked onchange="filterMacroList('custom')"><span data-i18n="filter_enabled">Enabled</span></label>
+<label class="check"><input id="customMacroFilterDisabled" type="checkbox" checked onchange="filterMacroList('custom')"><span data-i18n="filter_disabled">Disabled</span></label>
+</div>
 <div id="customMacroNotice" role="status"></div><div id="customMacroList"></div>
 <hr style="border:0;border-top:1px solid #35404d;margin:20px 0">
 <h3 id="customEditorTitle" data-i18n="create_custom_macro">Create Custom Macro</h3>
@@ -711,6 +713,7 @@ async function loadExistingMacros() {
       const card=document.createElement('div');
       card.className='macro-card';
       card.dataset.macroName=String(name).toLowerCase();
+      card.dataset.macroEnabled=pref.enabled?'true':'false';
       const head=document.createElement('div');
       head.className='macro-title';
       const title=document.createElement('h3');
@@ -753,12 +756,19 @@ function filterMacroList(kind){
   const input=document.getElementById(prefix+'MacroSearch');
   const target=document.getElementById(prefix+'MacroList');
   const count=document.getElementById(prefix+'MacroCount');
-  if(!input||!target||!count)return;
+  const enabledBox=document.getElementById(prefix+'MacroFilterEnabled');
+  const disabledBox=document.getElementById(prefix+'MacroFilterDisabled');
+  if(!input||!target||!count||!enabledBox||!disabledBox)return;
   const query=input.value.trim().toLowerCase();
+  const showEnabled=enabledBox.checked;
+  const showDisabled=disabledBox.checked;
   const cards=Array.from(target.querySelectorAll('.macro-card'));
   let visible=0;
   cards.forEach(card=>{
-    const matches=(card.dataset.macroName||'').includes(query);
+    const nameMatches=(card.dataset.macroName||'').includes(query);
+    const isEnabled=card.dataset.macroEnabled==='true';
+    const statusMatches=(isEnabled&&showEnabled)||(!isEnabled&&showDisabled);
+    const matches=nameMatches&&statusMatches;
     card.hidden=!matches;
     if(matches)visible++;
   });
@@ -795,7 +805,10 @@ function syncExistingMacroPreferenceControls(){
     const field=d.prefField;
     cb.checked=!!pref[field];
     cb.disabled=field!=='enabled'&&!pref.enabled;
+    const card=cb.closest('.macro-card');
+    if(card)card.dataset.macroEnabled=pref.enabled?'true':'false';
   });
+  filterMacroList('existing');
 }
 async function saveExistingMacroPreference(name,file,duplicated,field,value){
   const notice=document.getElementById('existingMacroNotice');
@@ -824,7 +837,7 @@ async function loadCustomMacros() {
     if(!customMacroData.length){filterMacroList('custom');return;}
     customMacroData.forEach(m=>{
       const key=normalizeMacroName(m.name),pref=customMacroPreferences[key]||{enabled:true,notify:true,screenshot:false};
-      const card=document.createElement('div');card.className='macro-card';card.dataset.macroName=String(m.name||'').toLowerCase();
+      const card=document.createElement('div');card.className='macro-card';card.dataset.macroName=String(m.name||'').toLowerCase();card.dataset.macroEnabled=pref.enabled?'true':'false';
       const h=document.createElement('div');h.className='macro-title';const title=document.createElement('h3');title.textContent=m.name;h.appendChild(title);
       const actions=document.createElement('div');actions.className='macro-toolbar';
       const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent=tr('edit','Edit');edit.onclick=()=>editCustomMacro(m.name);
@@ -846,7 +859,11 @@ async function saveCustomMacroPreference(name,field,value,control){
   const next={...previous,[field]:!!value};
   try{
     const result=await api('/api/macros/preferences',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,preferences:next})});
-    customMacroPreferences[key]=result.preferences[key]||next;notice.textContent=`${name}: ${tr('macro_setting_saved','setting saved.')}`;
+    customMacroPreferences[key]=result.preferences[key]||next;
+    const card=control.closest('.macro-card');
+    if(card&&field==='enabled')card.dataset.macroEnabled=customMacroPreferences[key].enabled?'true':'false';
+    notice.textContent=`${name}: ${tr('macro_setting_saved','setting saved.')}`;
+    if(field==='enabled')filterMacroList('custom');
   }catch(e){control.checked=!value;notice.textContent=tr('preference_save_failed','Preference save failed: ') + e.message;notice.className='macro-warning';}
 }
 function resetCustomEditor(){editingCustomMacro=null;document.getElementById('customEditorTitle').textContent=tr('create_custom_macro','Create Custom Macro');document.getElementById('customMacroName').value='';document.getElementById('customMacroContent').value='';}
@@ -869,6 +886,10 @@ async function saveCustomMacro(){
 async function deleteCustomMacro(name){if(!confirm(`${tr('confirm_delete_macro','Delete custom macro')} ${name}?`))return;const next=customMacroData.filter(m=>m.name!==name);try{const result=await api('/api/macros/custom',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({macros:next})});customMacroData=result.macros||next;if(editingCustomMacro===name)resetCustomEditor();await loadCustomMacros();document.getElementById('customMacroNotice').textContent=tr('macro_deleted','Macro deleted.');}catch(e){document.getElementById('customMacroNotice').textContent=tr('delete_failed','Delete failed: ') + e.message;}}
 
 async function initialize() {
+  if (window.location.hash) {
+    window.location.hash = '';
+  }
+
   const login = document.getElementById('login');
   const app = document.getElementById('app');
 

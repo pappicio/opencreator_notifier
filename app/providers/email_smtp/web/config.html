@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Email SMTP - OpenCreator</title>
+    <link rel="stylesheet" href="/providers/email_smtp/web/config.css">
+</head>
+<body>
+    <header class="header">
+        <div class="provider-brand"><img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator"><div><h1>Email (SMTP)</h1>
+            <p data-i18n="description">Send printer notifications using an SMTP server.</p></div></div>
+        <button class="button secondary" id="backButton" data-i18n="back">Back</button>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2 data-i18n="service_configuration">Service Configuration</h2>
+
+            <label for="serviceName" data-i18n="service_name">Service Name</label>
+            <input id="serviceName" type="text" maxlength="80" required>
+
+            <label for="smtpHost" data-i18n="smtp_host">SMTP Server</label>
+            <input id="smtpHost" type="text" maxlength="253" required
+                   placeholder="smtp.example.com" autocomplete="off">
+
+            <label for="security" data-i18n="security">Security</label>
+            <select id="security">
+                <option value="starttls">STARTTLS</option>
+                <option value="ssl">SSL / TLS</option>
+                <option value="insecure" data-i18n="insecure">None (insecure)</option>
+            </select>
+
+            <label for="port" data-i18n="port">Port</label>
+            <input id="port" type="number" min="1" max="65535" required>
+
+            <label for="username" data-i18n="username">Username (optional)</label>
+            <input id="username" type="text" maxlength="256" autocomplete="off">
+
+            <label for="password" data-i18n="password">Password (optional)</label>
+            <div class="secret-wrap">
+                <input id="password" type="password" maxlength="1024" autocomplete="new-password">
+                <button type="button" class="secret-toggle" id="togglePassword"
+                        data-i18n="show">Show</button>
+            </div>
+
+            <label for="senderEmail" data-i18n="sender_email">Sender Email</label>
+            <input id="senderEmail" type="email" maxlength="254" required
+                   placeholder="printer@example.com">
+
+            <label for="senderName" data-i18n="sender_name">Sender Name (optional)</label>
+            <input id="senderName" type="text" maxlength="128">
+
+            <label for="recipients" data-i18n="recipients">Recipient Emails</label>
+            <textarea id="recipients" rows="3" required
+                      placeholder="user@example.com, another@example.com"></textarea>
+            <p class="hint" data-i18n="recipients_hint">
+                Separate multiple addresses with commas, semicolons or new lines.
+            </p>
+
+            <label class="checkbox-row">
+                <input id="enabled" type="checkbox">
+                <span data-i18n="enabled">Enable notifications</span>
+            </label>
+
+            <div class="actions">
+                <button class="button primary" id="saveButton" data-i18n="save">Save Configuration</button>
+                <button class="button secondary" id="testButton" data-i18n="test" disabled>Test Notification</button>
+                <button class="button secondary" id="cancelButton" data-i18n="cancel">Cancel</button>
+            </div>
+
+            <p id="notice" role="status"></p>
+        </section>
+    </main>
+
+    <script src="/providers/email_smtp/web/config.js"></script>
+</body>
+</html>

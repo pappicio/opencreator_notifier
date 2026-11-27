@@ -12,11 +12,11 @@ Apprise:
   License: BSD 2-Clause License
 
 Apprise is used to provide notification services through
-supported messaging platforms, including Telegram.
+supported messaging platforms: Discord, Email (SMTP), Google Chat, Gotify, Matrix, Mattermost, Microsoft Teams, ntfy, Pushover, Slack and Telegram.
 
 OpenCreator Notifier includes:
   - Apprise integration
-  - Telegram notification support
+  - 11 integrated notification providers
   - Standalone web interface
   - English and Italian translations
   - Provider and notification management
@@ -29,4 +29,4 @@ It is not affiliated with or endorsed by the Apprise maintainers.
 
 Third-party licenses and notices are retained where required.
 
-Modification notice date: 2026-11-26
+Modification notice date: 2026-11-27

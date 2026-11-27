@@ -1,6 +1,6 @@
 # OpenCreator Notifier
 
-OpenCreator Notifier is a plugin for OpenCreator / Flashforge Creator 5 that provides Telegram notifications, printer event monitoring, and configurable macro notifications through [Apprise](https://github.com/caronc/apprise).
+OpenCreator Notifier is a plugin for OpenCreator / Flashforge Creator 5 that provides printer event monitoring and configurable macro notifications through [Apprise](https://github.com/caronc/apprise).
 
 The plugin integrates with Moonraker and Klipper while keeping its application, configuration, data, logs, and Python environment inside its own plugin directory.
 
@@ -8,7 +8,7 @@ The plugin integrates with Moonraker and Klipper while keeping its application, 
 
 ## Features
 
-- Telegram notifications through Apprise.
+- Notifications through Apprise: Discord, Email (SMTP), Google Chat, Gotify, Matrix, Mattermost, Microsoft Teams, ntfy, Pushover, Slack and Telegram.
 - Printer event notifications.
 - Configurable notification preferences.
 - Monitoring of existing Klipper macros.
@@ -27,7 +27,7 @@ The plugin integrates with Moonraker and Klipper while keeping its application, 
 
 OpenCreator Notifier uses Apprise as its notification backend.
 
-Apprise provides a unified notification interface and supports many notification services. This plugin currently uses Telegram as its notification destination.
+Apprise provides a unified notification interface and supports many notification services. Integrated notification providers: Discord, Email (SMTP), Google Chat, Gotify, Matrix, Mattermost, Microsoft Teams, ntfy, Pushover, Slack and Telegram.
 
 The notification system is configured through the plugin's web interface.
 
@@ -187,7 +187,7 @@ The plugin also integrates with Moonraker's standard secrets location through a 
 
 The installation and uninstallation scripts check the target paths before creating or removing links. Existing unrelated files or links are not intentionally overwritten.
 
-Sensitive information such as Telegram credentials should never be committed to the repository.
+Sensitive information such as notification provider credentials should never be committed to the repository.
 
 ---
 
@@ -197,21 +197,21 @@ The plugin directory contains the application, frontend, configuration, Klipper 
 
     opencreator_notifier/
     +-- app/
-    Â¦   +-- telegram_notify.py
+    ¦   +-- telegram_notify.py
     +-- config/
-    Â¦   +-- oc_notifier.cfg
+    ¦   +-- oc_notifier.cfg
     +-- klippy/
-    Â¦   +-- oc_notifier.py
+    ¦   +-- oc_notifier.py
     +-- scripts/
-    Â¦   +-- install.sh
-    Â¦   +-- update.sh
-    Â¦   +-- start.sh
-    Â¦   +-- uninstall.sh
+    ¦   +-- install.sh
+    ¦   +-- update.sh
+    ¦   +-- start.sh
+    ¦   +-- uninstall.sh
     +-- web/
-    Â¦   +-- index.html
-    Â¦   +-- languages/
-    Â¦       +-- en.json
-    Â¦       +-- it.json
+    ¦   +-- index.html
+    ¦   +-- languages/
+    ¦       +-- en.json
+    ¦       +-- it.json
     +-- data/
     +-- logs/
     +-- backup/
@@ -277,7 +277,7 @@ The script verifies the virtual environment and installs the pinned Apprise vers
 
 Verify:
 
-- Telegram configuration and credentials.
+- Notification provider configuration and credentials.
 - The selected notification events.
 - The plugin service status.
 - Network connectivity.

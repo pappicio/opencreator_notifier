@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ntfy Configuration - OpenCreator Notifier</title>
+<link rel="stylesheet" href="config.css">
+</head>
+<body>
+<main>
+  <header>
+    <div class="provider-brand">
+      <img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator">
+      <div>
+        <h1>ntfy</h1>
+        <p data-i18n="description">Configure an ntfy notification destination</p>
+      </div>
+    </div>
+    <button type="button" class="secondary" id="backButton" data-i18n="back">Back</button>
+  </header>
+  <section class="card">
+    <h2 data-i18n="service_configuration">Service Configuration</h2>
+    <div class="field">
+      <label for="serviceName" data-i18n="service_name">Service Name</label>
+      <input id="serviceName" maxlength="80" placeholder="e.g. Printer Notifications" required>
+    </div>
+    <div class="field">
+      <label for="serverUrl" data-i18n="server_url">Server URL</label>
+      <input id="serverUrl" type="url" value="https://ntfy.sh" placeholder="https://ntfy.sh" required>
+    </div>
+    <div class="field">
+      <label for="topic" data-i18n="topic">Topic</label>
+      <input id="topic" type="text" maxlength="64" autocomplete="off" placeholder="my-printer" required>
+    </div>
+    <div class="field">
+      <label for="token" data-i18n="token">Access Token (optional)</label>
+      <div class="token-wrap">
+        <input id="token" type="password" autocomplete="off">
+        <button type="button" class="token-toggle" id="toggleToken" aria-label="Show token">👁</button>
+      </div>
+    </div>
+    <label class="check">
+      <input id="enabled" type="checkbox" checked>
+      <span data-i18n="enabled">Enabled</span>
+    </label>
+    <div class="actions">
+      <button type="button" id="saveButton" data-i18n="save">Save Configuration</button>
+      <button type="button" class="secondary" id="testButton" disabled data-i18n="test">Test Notification</button>
+      <button type="button" class="secondary" id="cancelButton" data-i18n="cancel">Cancel</button>
+    </div>
+    <p id="notice" role="status"></p>
+  </section>
+</main>
+<script src="config.js"></script>
+</body>
+</html>

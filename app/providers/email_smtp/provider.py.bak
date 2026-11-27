@@ -1,0 +1,150 @@
+import re
+from urllib.parse import quote, urlencode
+
+PROVIDER = {
+    "id": "email_smtp",
+    "name": "Email (SMTP)",
+    "description": "Send printer notifications through an SMTP server.",
+    "translations": {
+        "en": {
+            "name": "Email (SMTP)",
+            "description": "Send printer notifications through an SMTP server."
+        },
+        "it": {
+            "name": "Email (SMTP)",
+            "description": "Invia notifiche della stampante tramite un server SMTP."
+        }
+    },
+    "fields": [
+        {"id": "smtp_host", "label": "SMTP Server", "type": "text", "required": True},
+        {"id": "port", "label": "Port", "type": "number", "required": True},
+        {"id": "security", "label": "Security Mode", "type": "select", "required": True},
+        {"id": "username", "label": "Username", "type": "text", "required": False},
+        {"id": "password", "label": "Password", "type": "password", "required": False},
+        {"id": "sender_email", "label": "Sender Email", "type": "text", "required": True},
+        {"id": "sender_name", "label": "Sender Name", "type": "text", "required": False},
+        {"id": "recipients", "label": "Recipient Emails", "type": "text", "required": True}
+    ]
+}
+
+DEFAULT_PORTS = {
+    "starttls": 587,
+    "ssl": 465,
+    "insecure": 25
+}
+
+EMAIL_PATTERN = re.compile(
+    r"^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@"
+    r"[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?"
+    r"(?:\.[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?)+$",
+    re.I
+)
+
+
+def validate(settings):
+    host = str(settings.get("smtp_host", "")).strip().lower()
+    security = str(settings.get("security", "starttls")).strip().lower()
+    username = str(settings.get("username", "")).strip()
+    password = str(settings.get("password", ""))
+    sender_email = str(settings.get("sender_email", "")).strip()
+    sender_name = str(settings.get("sender_name", "")).strip()
+    recipients_raw = str(settings.get("recipients", "")).strip()
+
+    if not host or len(host) > 253:
+        raise ValueError("Invalid SMTP server")
+
+    if (
+        not re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?", host)
+        or ".." in host
+        or any(not part or len(part) > 63 for part in host.split("."))
+    ):
+        raise ValueError("Invalid SMTP server")
+
+    if security not in DEFAULT_PORTS:
+        raise ValueError("Invalid SMTP security mode")
+
+    raw_port = str(settings.get("port", "")).strip()
+    try:
+        port = int(raw_port) if raw_port else DEFAULT_PORTS[security]
+    except (TypeError, ValueError):
+        raise ValueError("Invalid SMTP port")
+
+    if not 1 <= port <= 65535:
+        raise ValueError("Invalid SMTP port")
+
+    if bool(username) != bool(password):
+        raise ValueError("SMTP username and password must both be provided")
+
+    if len(username) > 256 or any(ord(c) < 33 or ord(c) == 127 for c in username):
+        raise ValueError("Invalid SMTP username")
+
+    if len(password) > 1024 or any(ord(c) < 32 or ord(c) == 127 for c in password):
+        raise ValueError("Invalid SMTP password")
+
+    if not EMAIL_PATTERN.fullmatch(sender_email):
+        raise ValueError("Invalid sender email address")
+
+    if len(sender_name) > 128 or any(ord(c) < 32 or ord(c) == 127 for c in sender_name):
+        raise ValueError("Invalid sender name")
+
+    raw_recipients = settings.get("recipients", "")
+
+    if isinstance(raw_recipients, (list, tuple)):
+        recipients = [str(item).strip() for item in raw_recipients if str(item).strip()]
+    else:
+        raw_recipients = str(raw_recipients)
+        recipients = [
+            item.strip()
+            for item in raw_recipients.replace(";", ",").replace("\\n", ",").split(",")
+            if item.strip()
+        ]
+
+    if not recipients or len(recipients) > 30:
+        raise ValueError("Enter between 1 and 30 recipient email addresses")
+
+    if any(not EMAIL_PATTERN.fullmatch(item) for item in recipients):
+        raise ValueError("One or more recipient email addresses are invalid")
+
+    recipients = list(dict.fromkeys(recipients))
+
+    return {
+        "smtp_host": host,
+        "port": port,
+        "security": security,
+        "username": username,
+        "password": password,
+        "sender_email": sender_email,
+        "sender_name": sender_name,
+        "recipients": recipients
+    }
+
+
+def build_url(settings):
+    values = validate(settings)
+
+    scheme = "mailto" if values["security"] == "insecure" else "mailtos"
+
+    auth = ""
+    if values["username"]:
+        auth = quote(values["username"], safe="")
+        auth += ":" + quote(values["password"], safe="") + "@"
+
+    path = "/".join(
+        quote(address, safe="")
+        for address in values["recipients"]
+    )
+
+    params = {
+        "from": values["sender_email"],
+        "mode": values["security"]
+    }
+
+    if values["sender_name"]:
+        params["name"] = values["sender_name"]
+
+    query = urlencode(params)
+
+    return (
+        f"{scheme}://{auth}{values['smtp_host']}:{values['port']}"
+        f"/{path}?{query}"
+    )

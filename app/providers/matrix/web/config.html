@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Matrix - OpenCreator</title>
+    <link rel="stylesheet" href="/providers/matrix/web/config.css">
+</head>
+<body>
+    <header class="header">
+        <div class="provider-brand"><img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator"><div><h1>Matrix</h1>
+            <p data-i18n="description">Send printer notifications to Matrix.</p></div></div>
+        <button class="button secondary" id="backButton" data-i18n="back">Back</button>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2 data-i18n="service_configuration">Service Configuration</h2>
+
+            <label for="serviceName" data-i18n="service_name">Service Name</label>
+            <input id="serviceName" type="text" maxlength="80" required>
+
+            <label for="homeserverUrl" data-i18n="homeserver_url">Homeserver URL</label>
+            <input id="homeserverUrl" type="url" maxlength="500"
+                   placeholder="https://matrix.example.com"
+                   autocomplete="url" spellcheck="false" required>
+
+            <label for="accessToken" data-i18n="access_token">Access Token</label>
+            <div class="secret-wrap">
+                <input id="accessToken" type="password" maxlength="2000"
+                       autocomplete="off" spellcheck="false" required>
+                <button type="button" class="secret-toggle" id="toggleToken"
+                        data-i18n="show">Show</button>
+            </div>
+
+            <label for="target" data-i18n="target">Room ID, Room Alias or User ID</label>
+            <input id="target" type="text" maxlength="500"
+                   placeholder="!room:matrix.example.com"
+                   autocomplete="off" spellcheck="false" required>
+            <p class="hint" data-i18n="target_hint">
+                Enter a Room ID (!), Room Alias (#) or User ID (@).
+            </p>
+
+            <label class="checkbox-row">
+                <input id="enabled" type="checkbox">
+                <span data-i18n="enabled">Enable notifications</span>
+            </label>
+
+            <div class="actions">
+                <button class="button primary" id="saveButton" data-i18n="save">Save Configuration</button>
+                <button class="button secondary" id="testButton" data-i18n="test" disabled>Test Notification</button>
+                <button class="button secondary" id="cancelButton" data-i18n="cancel">Cancel</button>
+            </div>
+
+            <p id="notice" role="status"></p>
+        </section>
+    </main>
+
+    <script src="/providers/matrix/web/config.js"></script>
+</body>
+</html>

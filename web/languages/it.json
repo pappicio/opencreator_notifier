@@ -113,6 +113,8 @@
     "unique_macros": "macro uniche",
     "definitions": "definizioni",
     "macro_enabled": "Attiva",
+    "filter_disabled": "Disabilitate",
+    "filter_enabled": "Abilitate",
     "macro_notify": "Notifica",
     "macro_screenshot": "Screenshot",
     "no_custom_macros": "Nessuna macro personalizzata.",

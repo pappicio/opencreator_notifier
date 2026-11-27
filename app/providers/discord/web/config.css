@@ -96,3 +96,35 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   header { align-items: flex-start; }
   .card { padding: 17px; }
 }
+
+
+/* Shared OpenCreator provider branding */
+.provider-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+.oc-logo {
+    display: block;
+    width: 94px;
+    height: 58px;
+    flex: 0 0 auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 5px #0005);
+}
+.provider-brand > div {
+    min-width: 0;
+}
+.provider-brand h1 {
+    margin: 0 0 6px;
+}
+@media (max-width: 600px) {
+    .provider-brand {
+        gap: 10px;
+    }
+    .oc-logo {
+        width: 70px;
+        height: 44px;
+    }
+}
