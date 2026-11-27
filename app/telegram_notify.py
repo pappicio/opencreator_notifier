@@ -364,7 +364,7 @@ def send_notification(message, photo=False, service_ids=None):
     cfg = get_config()
     runtime_state = service_runtime_state(cfg)
 
-    if runtime_state != "soc":
+    if runtime_state not in ("soc", "tunneled"):
         logger.info("Notification suppressed; service state: %s", runtime_state)
         return
 
@@ -477,7 +477,7 @@ def monitor():
         else:
             mode_check_failed = False
 
-        if runtime_state != "soc":
+        if runtime_state in ("disabled", "unknown"):
             if not was_dormant:
                 logger.info("Monitoring suspended; service state: %s", runtime_state)
             was_dormant = True
@@ -499,7 +499,7 @@ def monitor():
             continue
 
         if was_dormant:
-            logger.info("SOC mode available; monitoring resumed")
+            logger.info("Printer monitoring resumed; mode: %s", runtime_state)
             was_dormant = False
 
         try:
@@ -717,7 +717,7 @@ def process_moonraker_event(payload):
         return False
 
     runtime_state = service_runtime_state(cfg)
-    if runtime_state != "soc":
+    if runtime_state not in ("soc", "tunneled"):
         logger.info("Moonraker notification suppressed; service state: %s",
                     runtime_state)
         return False
@@ -971,7 +971,16 @@ class Handler(BaseHTTPRequestHandler):
 
         if route == "/api/status":
             with state_lock:
-                self.send_json(dict(printer_state))
+                status = dict(printer_state)
+            try:
+                status["mode"] = (
+                    "TUNNELED"
+                    if os.stat(MODE_MARKER).st_mode & 0o111
+                    else "SOC"
+                )
+            except OSError:
+                status["mode"] = "UNKNOWN"
+            self.send_json(status)
             return
 
         if route == "/api/providers":
@@ -1413,11 +1422,11 @@ class Handler(BaseHTTPRequestHandler):
 
             if route == "/api/test":
                 runtime_state = service_runtime_state()
-                if runtime_state != "soc":
+                if runtime_state not in ("soc", "tunneled"):
                     self.send_json({
                         "ok": False,
                         "error": "Service disabled" if runtime_state == "disabled"
-                                 else "Notifications are available only in SOC mode"
+                                 else "Notifications are unavailable in the current printer mode"
                     })
                     return
                 values = self.read_json()

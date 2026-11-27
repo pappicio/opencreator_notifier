@@ -11,6 +11,7 @@
     "download": "Download language",
     "upload": "Upload language",
     "printer_status": "Printer Status",
+    "tunneled_warning": "Some monitoring and notification features may be limited compared to SOC Mode.",
     "moonraker": "Moonraker",
     "print_state": "Print State",
     "file": "File",

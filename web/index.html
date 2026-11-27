@@ -72,6 +72,34 @@ button.secondary{background:#465363}
 .badge{display:inline-block;background:#465363;border-radius:5px;padding:3px 7px;font-size:12px}
 .badge.warning{background:#704d24;color:#ffd69a}
 @media(max-width:600px){.grid,.status{grid-template-columns:1fr}body{padding:14px}}
+
+.mode-badge {
+    display: inline-block;
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+.mode-badge.soc {
+    background: #174b35;
+    color: #a5f0c5;
+    border: 1px solid #287b54;
+}
+.mode-badge.tunneled {
+    background: #173d60;
+    color: #a9d8ff;
+    border: 1px solid #3475a8;
+}
+.mode-badge.unknown {
+    background: #465363;
+    color: #fff;
+}
+@media(max-width:480px) {
+    .mode-badge { padding: 6px 8px; font-size: 11px; }
+}
+
 </style>
 </head>
 <body>
@@ -99,7 +127,9 @@ button.secondary{background:#465363}
 <div class="topbar">
 <div class="brand-lockup">
 <img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator">
-<div><h1 data-i18n="title">OpenCreator Notifier</h1><div class="sub" data-i18n="subtitle">OpenCreator · Creator 5</div></div></div>
+<div><h1 data-i18n="title">OpenCreator Notifier</h1><div class="sub" data-i18n="subtitle">OpenCreator · Creator 5</div></div>
+<span id="modeBadge" class="mode-badge unknown">UNKNOWN</span>
+</div>
 <button type="button" class="secondary" onclick="logout()" data-i18n="logout">Logout</button>
 </div>
 
@@ -161,6 +191,7 @@ gcode:
 
 <section class="card">
 <h2 data-i18n="printer_status">Printer Status</h2>
+<p id="tunneledWarning" class="muted" data-i18n="tunneled_warning" hidden>Some monitoring and notification features may be limited compared to SOC Mode.</p>
 <div class="status">
 <div class="stat"><small data-i18n="moonraker">Moonraker</small><strong id="connection">Loading...</strong></div>
 <div class="stat"><small data-i18n="print_state">Print State</small><strong id="state">-</strong></div>
@@ -336,6 +367,22 @@ async function uploadLanguage(file) {
 async function refreshStatus() {
   try {
     const s = await api('/api/status');
+
+    const modeBadge = document.getElementById('modeBadge');
+    if (modeBadge) {
+      const mode = (s.mode || 'UNKNOWN').toUpperCase();
+      modeBadge.textContent = mode;
+      modeBadge.className = 'mode-badge ' +
+        (mode === 'SOC' ? 'soc' :
+         mode === 'TUNNELED' ? 'tunneled' : 'unknown');
+
+      const tunneledWarning = document.getElementById('tunneledWarning');
+      if (tunneledWarning) {
+        const showWarning = mode === 'TUNNELED';
+        tunneledWarning.hidden = !showWarning;
+        tunneledWarning.style.display = showWarning ? 'block' : 'none';
+      }
+    }
     const t = currentPack.interface;
 
     const connectionMap = {

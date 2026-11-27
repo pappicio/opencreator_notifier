@@ -11,6 +11,7 @@
     "download": "Scarica lingua",
     "upload": "Carica lingua",
     "printer_status": "Stato stampante",
+    "tunneled_warning": "In modalità Tunneled alcune funzioni di monitoraggio e notifica potrebbero essere limitate rispetto alla modalità SOC.",
     "moonraker": "Moonraker",
     "print_state": "Stato stampa",
     "file": "File",

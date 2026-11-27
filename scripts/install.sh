@@ -35,9 +35,8 @@ echo ""
 CURRENT_STEP="Preparing plugin directories"
 echo "[2/7] Preparing plugin directories..."
 
-mkdir -p "$PLUGIN_DIR/data" "$PLUGIN_DIR/logs" "$PLUGIN_DIR/backup"
+mkdir -p "$PLUGIN_DIR/data" "$PLUGIN_DIR/backup"
 echo "Data directory: $PLUGIN_DIR/data"
-echo "Logs directory: $PLUGIN_DIR/logs"
 echo "Backup directory: $PLUGIN_DIR/backup"
 echo "[SUCCESS] Plugin directories ready."
 echo ""
@@ -94,12 +93,12 @@ if [ -L "$VENV" ]; then
 fi
 
 if [ -x "$VENV/bin/python" ] && "$VENV/bin/python" -c "import sys" >/dev/null 2>&1; then
-    echo "Existing virtual environment found: $VENV"
+    echo "Existing Python environment found: $VENV"
+elif [ -e "$VENV" ]; then
+    echo "ERROR: Invalid environment path already exists: $VENV" >&2
+    echo "It was left untouched. Inspect it before retrying." >&2
+    exit 1
 else
-    if [ -e "$VENV" ]; then
-        echo "Removing incomplete virtual environment: $VENV"
-        rm -rf "$VENV"
-    fi
     echo "Creating environment: $VENV"
     "$BASE_PYTHON" -m venv "$VENV"
 fi
