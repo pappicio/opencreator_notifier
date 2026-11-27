@@ -390,7 +390,7 @@ def send_notification(message, photo=False, service_ids=None):
 
             if content_type.startswith("image/") and len(data) <= 2 * 1024 * 1024:
                 snapshot_path = os.path.join(
-                    DATA, "snapshot-" + uuid.uuid4().hex + ".jpg"
+                    "/tmp", "opencreator-notifier-snapshot-" + uuid.uuid4().hex + ".jpg"
                 )
                 with open(snapshot_path, "wb") as image_file:
                     image_file.write(data)
