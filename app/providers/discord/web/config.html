@@ -20,16 +20,16 @@
     <h2 data-i18n="service_configuration">Service Configuration</h2>
     <div class="field">
       <label for="serviceName" data-i18n="service_name">Service Name</label>
-      <input id="serviceName" maxlength="80" placeholder="e.g. Workshop Discord" required>
+      <input id="serviceName" maxlength="80" data-i18n-placeholder="service_name_placeholder" placeholder="e.g. Workshop Discord" required>
     </div>
     <div class="field">
       <label for="webhookId" data-i18n="webhook_id">Webhook ID</label>
-      <input id="webhookId" type="text" autocomplete="off" placeholder="Discord Webhook ID" required>
+      <input id="webhookId" type="text" autocomplete="off" data-i18n-placeholder="webhook_id_placeholder" placeholder="Discord Webhook ID" required>
     </div>
     <div class="field">
       <label for="webhookToken" data-i18n="webhook_token">Webhook Token</label>
       <div class="token-wrap">
-        <input id="webhookToken" type="password" autocomplete="off" placeholder="Discord Webhook Token" required>
+        <input id="webhookToken" type="password" autocomplete="off" data-i18n-placeholder="webhook_token_placeholder" placeholder="Discord Webhook Token" required>
         <button type="button" class="token-toggle" id="toggleToken" aria-label="Show Webhook token" title="Show Webhook token">👁</button>
       </div>
     </div>
@@ -45,6 +45,7 @@
     <p id="notice" role="status"></p>
   </section>
 </main>
+<script src="/providers/_shared/web/config.js"></script>
 <script src="config.js"></script>
 </body>
 </html>

@@ -3,58 +3,7 @@
 const API = '/api/provider/matrix/config';
 const params = new URLSearchParams(window.location.search);
 const serviceId = params.get('service_id');
-const language = params.get('lang') === 'it' ? 'it' : 'en';
-
-const TEXT = {
-    en: {
-        description: 'Send printer notifications to Matrix.',
-        back: 'Back',
-        service_configuration: 'Service Configuration',
-        service_name: 'Service Name',
-        homeserver_url: 'Homeserver URL',
-        access_token: 'Access Token',
-        target: 'Room ID, Room Alias or User ID',
-        target_hint: 'Enter a Room ID (!), Room Alias (#) or User ID (@).',
-        enabled: 'Enable notifications',
-        save: 'Save Configuration',
-        saving: 'Saving...',
-        test: 'Test Notification',
-        cancel: 'Cancel',
-        required: 'Please complete all required fields.',
-        saved: 'Configuration saved successfully.',
-        save_first: 'Save the configuration before testing.',
-        queueing: 'Sending test notification...',
-        queued: 'Test notification submitted.',
-        show: 'Show',
-        hide: 'Hide',
-        error: 'An error occurred. Please try again.'
-    },
-    it: {
-        description: 'Invia notifiche della stampante a Matrix.',
-        back: 'Indietro',
-        service_configuration: 'Configurazione servizio',
-        service_name: 'Nome servizio',
-        homeserver_url: 'URL Homeserver',
-        access_token: 'Access Token',
-        target: 'Room ID, alias della stanza o User ID',
-        target_hint: 'Inserisci un Room ID (!), un alias (#) oppure un User ID (@).',
-        enabled: 'Abilita notifiche',
-        save: 'Salva configurazione',
-        saving: 'Salvataggio...',
-        test: 'Invia notifica di test',
-        cancel: 'Annulla',
-        required: 'Compila tutti i campi obbligatori.',
-        saved: 'Configurazione salvata correttamente.',
-        save_first: 'Salva la configurazione prima di eseguire il test.',
-        queueing: 'Invio della notifica di test...',
-        queued: 'Notifica di test inviata.',
-        show: 'Mostra',
-        hide: 'Nascondi',
-        error: 'Si è verificato un errore. Riprova.'
-    }
-};
-
-const t = key => TEXT[language][key] || key;
+const t = key => window.OCNotifierI18n.t('provider_matrix_' + key);
 
 const serviceName = document.getElementById('serviceName');
 const homeserverUrl = document.getElementById('homeserverUrl');
@@ -67,7 +16,8 @@ const notice = document.getElementById('notice');
 const toggleToken = document.getElementById('toggleToken');
 
 function applyLanguage() {
-    document.documentElement.lang = language;
+    document.title = t('page_title');
+    document.documentElement.lang = window.OCNotifierI18n.language;
     document.querySelectorAll('[data-i18n]').forEach(element => {
         element.textContent = t(element.dataset.i18n);
     });
@@ -160,7 +110,7 @@ async function saveConfiguration() {
 
         if (!serviceId && data.service_id) {
             params.set('service_id', data.service_id);
-            params.set('lang', language);
+            params.set('lang', window.OCNotifierI18n.language);
             window.location.search = params.toString();
         }
     } catch (error) {
@@ -219,5 +169,14 @@ document.getElementById('cancelButton').addEventListener('click', () => {
     window.location.href = '/';
 });
 
-applyLanguage();
-loadConfiguration();
+(async function initialize() {
+    try {
+        await window.OCNotifierI18nReady;
+        applyLanguage();
+        await loadConfiguration();
+    } catch (error) {
+        console.error('Language initialization failed:', error);
+        saveButton.disabled = true;
+        testButton.disabled = true;
+    }
+})();

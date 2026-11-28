@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pushsafer Configuration</title>
+    <link rel="stylesheet" href="config.css">
+</head>
+<body>
+    <header class="header">
+        <div class="provider-brand">
+            <img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator">
+            <div>
+                <h1 id="page-title">Pushsafer</h1>
+                <p id="page-description">Send notifications to your devices using Pushsafer.</p>
+            </div>
+        </div>
+        <button type="button" id="back-button" class="secondary">Back</button>
+    </header>
+    <main class="provider-card">
+
+        <form id="provider-form">
+            <label for="service-name" id="label-service-name">Service Name</label>
+            <input id="service-name" type="text" autocomplete="off">
+
+            <label for="privatekey" id="label-privatekey">Private Key</label>
+            <div class="secret-field">
+                <input id="privatekey" type="password" autocomplete="new-password" required>
+                <button type="button" id="toggle-key" class="secondary">Show</button>
+            </div>
+
+            <label for="targets" id="label-targets">Target Devices</label>
+            <input id="targets" type="text" placeholder="Device IDs, separated by commas">
+            <small id="targets-help">Leave empty to send to all devices.</small>
+
+            <label for="priority" id="label-priority">Priority</label>
+            <select id="priority">
+                <option value="">Default</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
+                <option value="emergency">Emergency</option>
+            </select>
+
+            <label for="sound" id="label-sound">Sound</label>
+            <select id="sound">
+                <option value="">Default</option>
+                <option value="silent">Silent</option>
+                <option value="bell">Bell</option>
+                <option value="chime">Chime</option>
+                <option value="doorbell">Doorbell</option>
+                <option value="alarmarmed">Alarm Armed</option>
+                <option value="alarmdisarmed">Alarm Disarmed</option>
+                <option value="beep">Beep</option>
+                <option value="sirens">Sirens</option>
+                <option value="warn">Warning</option>
+                <option value="welcome">Welcome</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+
+            <label for="vibration" id="label-vibration">Vibration</label>
+            <select id="vibration">
+                <option value="">Default</option>
+                <option value="1">Low</option>
+                <option value="2">Normal</option>
+                <option value="3">High</option>
+            </select>
+
+            <label class="enabled-row">
+                <input id="enabled" type="checkbox" checked>
+                <span id="label-enabled">Enabled</span>
+            </label>
+
+            <div class="actions">
+                <button type="submit" id="save-button">Save Configuration</button>
+                <button type="button" id="test-button" class="secondary">Test Notification</button>
+                <button type="button" id="cancel-button" class="secondary">Cancel</button>
+            </div>
+            <div id="notice" role="status" aria-live="polite"></div>
+        </form>
+    </main>
+    <script src="/providers/_shared/web/config.js"></script>
+    <script src="config.js"></script>
+</body>
+</html>

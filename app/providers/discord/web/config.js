@@ -3,63 +3,17 @@
 const API = '/api/provider/discord/config';
 const params = new URLSearchParams(window.location.search);
 const serviceId = params.get('service_id') || '';
-const language = params.get('lang') === 'it' ? 'it' : 'en';
 const el = id => document.getElementById(id);
-
-const TEXT = {
-  en: {
-    description: 'Configure a Discord Webhook destination',
-    back: 'Back',
-    service_configuration: 'Service Configuration',
-    service_name: 'Service Name',
-    service_name_placeholder: 'e.g. Workshop Discord',
-    webhook_id: 'Webhook ID',
-    webhook_token: 'Webhook Token',
-    enabled: 'Enabled',
-    save: 'Save Configuration',
-    test: 'Test Notification',
-    cancel: 'Cancel',
-    show_token: 'Show Webhook token',
-    hide_token: 'Hide Webhook token',
-    required: 'Please complete all required fields.',
-    saving: 'Saving configuration...',
-    saved: 'Configuration saved successfully.',
-    save_first: 'Save the service before testing.',
-    queueing: 'Queueing test notification...',
-    queued: 'Test notification queued.',
-    error: 'Error: '
-  },
-  it: {
-    description: 'Configura una destinazione tramite Webhook Discord',
-    back: 'Indietro',
-    service_configuration: 'Configurazione servizio',
-    service_name: 'Nome servizio',
-    service_name_placeholder: 'es. Discord Laboratorio',
-    webhook_id: 'ID Webhook',
-    webhook_token: 'Token Webhook',
-    enabled: 'Attivo',
-    save: 'Salva configurazione',
-    test: 'Invia notifica di prova',
-    cancel: 'Annulla',
-    show_token: 'Mostra token Webhook',
-    hide_token: 'Nascondi token Webhook',
-    required: 'Completa tutti i campi obbligatori.',
-    saving: 'Salvataggio configurazione...',
-    saved: 'Configurazione salvata correttamente.',
-    save_first: 'Salva il servizio prima di eseguire il test.',
-    queueing: 'Accodamento notifica di prova...',
-    queued: 'Notifica di prova accodata.',
-    error: 'Errore: '
-  }
-};
-const t = key => TEXT[language][key] || TEXT.en[key] || key;
+const t = key => window.OCNotifierI18n.t('provider_discord_' + key);
 
 function applyLanguage() {
-  document.documentElement.lang = language;
+  document.documentElement.lang = window.OCNotifierI18n.language;
   document.querySelectorAll('[data-i18n]').forEach(node => {
     node.textContent = t(node.dataset.i18n);
   });
-  el('serviceName').placeholder = t('service_name_placeholder');
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(node => {
+    node.placeholder = t(node.dataset.i18nPlaceholder);
+  });
   el('toggleToken').title = t('show_token');
   el('toggleToken').setAttribute('aria-label', t('show_token'));
 }
@@ -92,7 +46,7 @@ async function loadConfiguration() {
       el('enabled').checked = data.service.enabled !== false;
       el('testButton').disabled = data.service.enabled === false;
     }
-    document.title = (serviceId ? 'Edit Discord' : 'Add Discord') + ' - OpenCreator Notifier';
+    document.title = t(serviceId ? 'title_edit' : 'title_add') + ' - OpenCreator Notifier';
   } catch (error) {
     showNotice(t('error') + error.message, true);
     el('saveButton').disabled = true;
@@ -133,7 +87,7 @@ async function saveConfiguration() {
     if (!serviceId && result.service_id) {
       const next = new URLSearchParams();
       next.set('service_id', result.service_id);
-      next.set('lang', language);
+      next.set('lang', window.OCNotifierI18n.language);
       window.history.replaceState({}, '', window.location.pathname + '?' + next);
       window.location.reload();
     }
@@ -182,5 +136,14 @@ el('toggleToken').addEventListener('click', () => {
   el('toggleToken').setAttribute('aria-label', el('toggleToken').title);
 });
 
-applyLanguage();
-loadConfiguration();
+(async function initialize() {
+  try {
+    await window.OCNotifierI18nReady;
+    applyLanguage();
+    await loadConfiguration();
+  } catch (error) {
+    showNotice('Language initialization failed: ' + error.message, true);
+    el('saveButton').disabled = true;
+    el('testButton').disabled = true;
+  }
+})();

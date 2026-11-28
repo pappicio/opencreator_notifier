@@ -1,0 +1,32 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local backups and generated archives
+backup/
+
+# Runtime data and user-specific configuration
+# Keep the directory placeholder, but never commit generated/runtime contents.
+data/*
+!data/.gitkeep
+
+# Secrets and credentials
+.env
+.env.*
+*.secret
+*.secrets
+*.token
+
+# Runtime logs and databases
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Test and tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/

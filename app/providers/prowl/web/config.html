@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prowl Configuration</title>
+    <link rel="stylesheet" href="config.css">
+</head>
+<body>
+    <main class="provider-card">
+        <header>
+            <h1>Prowl</h1>
+            <p id="page-description">Send push notifications using Prowl.</p>
+        </header>
+        <form id="provider-form">
+            <label for="service-name" id="label-service-name">Service Name</label>
+            <input id="service-name" type="text" autocomplete="off">
+
+            <label for="apikey" id="label-apikey">API Key</label>
+            <div class="secret-field">
+                <input id="apikey" type="password" autocomplete="new-password" required>
+                <button type="button" id="toggle-apikey" class="secondary">Show</button>
+            </div>
+            <small id="apikey-help">Your 40-character Prowl API key.</small>
+
+            <label for="providerkey" id="label-providerkey">Provider Key (optional)</label>
+            <input id="providerkey" type="password" autocomplete="new-password">
+            <small id="providerkey-help">Optional 40-character provider key.</small>
+
+            <label for="priority" id="label-priority">Priority</label>
+            <select id="priority">
+                <option value="normal">Normal</option>
+                <option value="low">Low</option>
+                <option value="moderate">Moderate</option>
+                <option value="high">High</option>
+                <option value="emergency">Emergency</option>
+            </select>
+
+            <label class="enabled-row">
+                <input id="enabled" type="checkbox" checked>
+                <span id="label-enabled">Enabled</span>
+            </label>
+
+            <div class="actions">
+                <button type="button" id="back-button" class="secondary">Back</button>
+                <button type="submit" id="save-button">Save Configuration</button>
+                <button type="button" id="test-button" class="secondary">Test Notification</button>
+                <button type="button" id="cancel-button" class="secondary">Cancel</button>
+            </div>
+            <div id="notice" role="status" aria-live="polite"></div>
+        </form>
+    </main>
+    <script src="/providers/_shared/web/config.js"></script>
+    <script src="config.js"></script>
+</body>
+</html>

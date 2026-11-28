@@ -3,52 +3,7 @@
 const API = '/api/provider/msteams/config';
 const params = new URLSearchParams(window.location.search);
 const serviceId = params.get('service_id');
-const language = params.get('lang') === 'it' ? 'it' : 'en';
-
-const TEXT = {
-    en: {
-        description: 'Send printer notifications to Microsoft Teams through Power Automate.',
-        back: 'Back',
-        service_configuration: 'Service Configuration',
-        service_name: 'Service Name',
-        webhook_url: 'Webhook URL',
-        enabled: 'Enable notifications',
-        save: 'Save Configuration',
-        saving: 'Saving...',
-        test: 'Test Notification',
-        cancel: 'Cancel',
-        required: 'Please enter a service name and webhook URL.',
-        saved: 'Configuration saved successfully.',
-        save_first: 'Save the configuration before testing.',
-        queueing: 'Sending test notification...',
-        queued: 'Test notification submitted.',
-        show_webhook: 'Show',
-        hide_webhook: 'Hide',
-        error: 'An error occurred. Please try again.'
-    },
-    it: {
-        description: 'Invia notifiche della stampante a Microsoft Teams tramite Power Automate.',
-        back: 'Indietro',
-        service_configuration: 'Configurazione servizio',
-        service_name: 'Nome servizio',
-        webhook_url: 'URL Webhook',
-        enabled: 'Abilita notifiche',
-        save: 'Salva configurazione',
-        saving: 'Salvataggio...',
-        test: 'Invia notifica di test',
-        cancel: 'Annulla',
-        required: 'Inserisci il nome del servizio e l’URL webhook.',
-        saved: 'Configurazione salvata correttamente.',
-        save_first: 'Salva la configurazione prima di eseguire il test.',
-        queueing: 'Invio della notifica di test...',
-        queued: 'Notifica di test inviata.',
-        show_webhook: 'Mostra',
-        hide_webhook: 'Nascondi',
-        error: 'Si è verificato un errore. Riprova.'
-    }
-};
-
-const t = key => TEXT[language][key] || key;
+const t = key => window.OCNotifierI18n.t('provider_msteams_' + key);
 
 const serviceName = document.getElementById('serviceName');
 const webhookUrl = document.getElementById('webhookUrl');
@@ -59,7 +14,7 @@ const notice = document.getElementById('notice');
 const toggleWebhook = document.getElementById('toggleWebhook');
 
 function applyLanguage() {
-    document.documentElement.lang = language;
+    document.documentElement.lang = window.OCNotifierI18n.language;
     document.querySelectorAll('[data-i18n]').forEach(element => {
         element.textContent = t(element.dataset.i18n);
     });
@@ -202,5 +157,14 @@ document.getElementById('cancelButton').addEventListener('click', () => {
     window.location.href = '/';
 });
 
-applyLanguage();
-loadConfiguration();
+(async function initialize() {
+    try {
+        await window.OCNotifierI18nReady;
+        applyLanguage();
+        await loadConfiguration();
+    } catch (error) {
+        console.error('Language initialization failed:', error);
+        saveButton.disabled = true;
+        testButton.disabled = true;
+    }
+})();

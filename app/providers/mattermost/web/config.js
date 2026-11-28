@@ -3,56 +3,7 @@
 const API = '/api/provider/mattermost/config';
 const params = new URLSearchParams(window.location.search);
 const serviceId = params.get('service_id');
-const language = params.get('lang') === 'it' ? 'it' : 'en';
-
-const TEXT = {
-    en: {
-        description: 'Send printer notifications to Mattermost.',
-        back: 'Back',
-        service_configuration: 'Service Configuration',
-        service_name: 'Service Name',
-        webhook_url: 'Incoming Webhook URL',
-        channel: 'Channel (optional)',
-        channel_hint: 'Leave empty to use the channel configured in the webhook.',
-        enabled: 'Enable notifications',
-        save: 'Save Configuration',
-        saving: 'Saving...',
-        test: 'Test Notification',
-        cancel: 'Cancel',
-        required: 'Please enter a service name and Incoming Webhook URL.',
-        saved: 'Configuration saved successfully.',
-        save_first: 'Save the configuration before testing.',
-        queueing: 'Sending test notification...',
-        queued: 'Test notification submitted.',
-        show: 'Show',
-        hide: 'Hide',
-        error: 'An error occurred. Please try again.'
-    },
-    it: {
-        description: 'Invia notifiche della stampante a Mattermost.',
-        back: 'Indietro',
-        service_configuration: 'Configurazione servizio',
-        service_name: 'Nome servizio',
-        webhook_url: 'URL Incoming Webhook',
-        channel: 'Canale (opzionale)',
-        channel_hint: 'Lascia vuoto per usare il canale configurato nel webhook.',
-        enabled: 'Abilita notifiche',
-        save: 'Salva configurazione',
-        saving: 'Salvataggio...',
-        test: 'Invia notifica di test',
-        cancel: 'Annulla',
-        required: 'Inserisci il nome del servizio e l’URL Incoming Webhook.',
-        saved: 'Configurazione salvata correttamente.',
-        save_first: 'Salva la configurazione prima di eseguire il test.',
-        queueing: 'Invio della notifica di test...',
-        queued: 'Notifica di test inviata.',
-        show: 'Mostra',
-        hide: 'Nascondi',
-        error: 'Si è verificato un errore. Riprova.'
-    }
-};
-
-const t = key => TEXT[language][key] || key;
+const t = key => window.OCNotifierI18n.t('provider_mattermost_' + key);
 
 const serviceName = document.getElementById('serviceName');
 const webhookUrl = document.getElementById('webhookUrl');
@@ -64,7 +15,8 @@ const notice = document.getElementById('notice');
 const toggleWebhook = document.getElementById('toggleWebhook');
 
 function applyLanguage() {
-    document.documentElement.lang = language;
+    document.documentElement.lang = window.OCNotifierI18n.language;
+    document.title = t('page_title');
     document.querySelectorAll('[data-i18n]').forEach(element => {
         element.textContent = t(element.dataset.i18n);
     });
@@ -153,7 +105,7 @@ async function saveConfiguration() {
 
         if (!serviceId && data.service_id) {
             params.set('service_id', data.service_id);
-            params.set('lang', language);
+            params.set('lang', window.OCNotifierI18n.language);
             window.location.search = params.toString();
         }
     } catch (error) {
@@ -212,5 +164,15 @@ document.getElementById('cancelButton').addEventListener('click', () => {
     window.location.href = '/';
 });
 
-applyLanguage();
-loadConfiguration();
+(async function init() {
+    try {
+        await window.OCNotifierI18nReady;
+        applyLanguage();
+        await loadConfiguration();
+    } catch (error) {
+        console.error('Mattermost initialization failed:', error);
+        saveButton.disabled = true;
+        testButton.disabled = true;
+        showNotice('Initialization failed. Please reload the page.', true);
+    }
+})();

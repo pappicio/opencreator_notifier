@@ -3,54 +3,7 @@
 const API = '/api/provider/pushover/config';
 const params = new URLSearchParams(window.location.search);
 const serviceId = params.get('service_id');
-const language = params.get('lang') === 'it' ? 'it' : 'en';
-
-const TEXT = {
-    en: {
-        description: 'Send printer notifications to Pushover.',
-        back: 'Back',
-        service_configuration: 'Service Configuration',
-        service_name: 'Service Name',
-        user_key: 'User Key',
-        api_token: 'API Token',
-        enabled: 'Enable notifications',
-        save: 'Save Configuration',
-        saving: 'Saving...',
-        test: 'Test Notification',
-        cancel: 'Cancel',
-        required: 'Please enter a service name, User Key and API Token.',
-        saved: 'Configuration saved successfully.',
-        save_first: 'Save the configuration before testing.',
-        queueing: 'Sending test notification...',
-        queued: 'Test notification submitted.',
-        show: 'Show',
-        hide: 'Hide',
-        error: 'An error occurred. Please try again.'
-    },
-    it: {
-        description: 'Invia notifiche della stampante tramite Pushover.',
-        back: 'Indietro',
-        service_configuration: 'Configurazione servizio',
-        service_name: 'Nome servizio',
-        user_key: 'User Key',
-        api_token: 'API Token',
-        enabled: 'Abilita notifiche',
-        save: 'Salva configurazione',
-        saving: 'Salvataggio...',
-        test: 'Invia notifica di test',
-        cancel: 'Annulla',
-        required: 'Inserisci il nome del servizio, User Key e API Token.',
-        saved: 'Configurazione salvata correttamente.',
-        save_first: 'Salva la configurazione prima di eseguire il test.',
-        queueing: 'Invio della notifica di test...',
-        queued: 'Notifica di test inviata.',
-        show: 'Mostra',
-        hide: 'Nascondi',
-        error: 'Si è verificato un errore. Riprova.'
-    }
-};
-
-const t = key => TEXT[language][key] || key;
+const t = key => window.OCNotifierI18n.t('provider_pushover_' + key);
 
 const serviceName = document.getElementById('serviceName');
 const userKey = document.getElementById('userKey');
@@ -63,7 +16,7 @@ const toggleUserKey = document.getElementById('toggleUserKey');
 const toggleApiToken = document.getElementById('toggleApiToken');
 
 function applyLanguage() {
-    document.documentElement.lang = language;
+    document.documentElement.lang = window.OCNotifierI18n.language;
     document.querySelectorAll('[data-i18n]').forEach(element => {
         element.textContent = t(element.dataset.i18n);
     });
@@ -154,7 +107,7 @@ async function saveConfiguration() {
 
         if (!serviceId && data.service_id) {
             params.set('service_id', data.service_id);
-            params.set('lang', language);
+            params.set('lang', window.OCNotifierI18n.language);
             window.location.search = params.toString();
         }
     } catch (error) {
@@ -218,5 +171,12 @@ document.getElementById('cancelButton').addEventListener('click', () => {
     window.location.href = '/';
 });
 
-applyLanguage();
-loadConfiguration();
+async function initialize() {
+    await window.OCNotifierI18nReady;
+    applyLanguage();
+    await loadConfiguration();
+}
+
+initialize().catch(error => {
+    showNotice(error.message || t('error'), true);
+});

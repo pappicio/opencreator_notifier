@@ -1,8 +1,8 @@
 {
   "id": "opencreator_notifier",
   "name": "OpenCreator Notifier",
-  "version": "0.1.8",
-  "description": "Telegram notifications and printer monitoring for OpenCreator.",
+  "version": "0.1.9",
+  "description": "A flexible printer notification and monitoring system powered by Apprise, supporting a wide and continuously expanding range of notification providers. Supports configurable notification services, events and printer monitoring. Depending on the number of configured providers, notification activity and service usage, it may increase system resource consumption.",
   "startup": [
     {
       "name": "opencreator-notifier",

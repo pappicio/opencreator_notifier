@@ -3,72 +3,7 @@
 const API = '/api/provider/email_smtp/config';
 const params = new URLSearchParams(window.location.search);
 const serviceId = params.get('service_id');
-const language = params.get('lang') === 'it' ? 'it' : 'en';
-
-const TEXT = {
-    en: {
-        description: 'Send printer notifications using an SMTP server.',
-        back: 'Back',
-        service_configuration: 'Service Configuration',
-        service_name: 'Service Name',
-        smtp_host: 'SMTP Server',
-        security: 'Security',
-        insecure: 'None (insecure)',
-        port: 'Port',
-        username: 'Username (optional)',
-        password: 'Password (optional)',
-        sender_email: 'Sender Email',
-        sender_name: 'Sender Name (optional)',
-        recipients: 'Recipient Emails',
-        recipients_hint: 'Separate multiple addresses with commas, semicolons or new lines.',
-        enabled: 'Enable notifications',
-        save: 'Save Configuration',
-        saving: 'Saving...',
-        test: 'Test Notification',
-        cancel: 'Cancel',
-        required: 'Please complete the service name, SMTP server, sender email and recipient emails.',
-        auth_pair: 'Username and password must both be provided, or both left empty.',
-        saved: 'Configuration saved successfully.',
-        save_first: 'Save the configuration before testing.',
-        queueing: 'Sending test notification...',
-        queued: 'Test notification submitted.',
-        show: 'Show',
-        hide: 'Hide',
-        error: 'An error occurred. Please try again.'
-    },
-    it: {
-        description: 'Invia notifiche della stampante tramite un server SMTP.',
-        back: 'Indietro',
-        service_configuration: 'Configurazione servizio',
-        service_name: 'Nome servizio',
-        smtp_host: 'Server SMTP',
-        security: 'Sicurezza',
-        insecure: 'Nessuna (non sicura)',
-        port: 'Porta',
-        username: 'Nome utente (facoltativo)',
-        password: 'Password (facoltativa)',
-        sender_email: 'Email mittente',
-        sender_name: 'Nome mittente (facoltativo)',
-        recipients: 'Email destinatari',
-        recipients_hint: 'Separa più indirizzi con virgole, punti e virgola o nuove righe.',
-        enabled: 'Abilita notifiche',
-        save: 'Salva configurazione',
-        saving: 'Salvataggio...',
-        test: 'Invia notifica di test',
-        cancel: 'Annulla',
-        required: 'Completa il nome del servizio, il server SMTP, l’email mittente e i destinatari.',
-        auth_pair: 'Nome utente e password devono essere entrambi compilati oppure entrambi vuoti.',
-        saved: 'Configurazione salvata correttamente.',
-        save_first: 'Salva la configurazione prima di eseguire il test.',
-        queueing: 'Invio della notifica di test...',
-        queued: 'Notifica di test inviata.',
-        show: 'Mostra',
-        hide: 'Nascondi',
-        error: 'Si è verificato un errore. Riprova.'
-    }
-};
-
-const t = key => TEXT[language][key] || key;
+const t = key => window.OCNotifierI18n.t('provider_email_smtp_' + key);
 
 const fields = {
     serviceName: document.getElementById('serviceName'),
@@ -89,7 +24,8 @@ const notice = document.getElementById('notice');
 const togglePassword = document.getElementById('togglePassword');
 
 function applyLanguage() {
-    document.documentElement.lang = language;
+    document.title = t('page_title');
+    document.documentElement.lang = window.OCNotifierI18n.language;
     document.querySelectorAll('[data-i18n]').forEach(element => {
         element.textContent = t(element.dataset.i18n);
     });
@@ -216,7 +152,7 @@ async function saveConfiguration() {
 
         if (!serviceId && data.service_id) {
             params.set('service_id', data.service_id);
-            params.set('lang', language);
+            params.set('lang', window.OCNotifierI18n.language);
             window.location.search = params.toString();
         }
     } catch (error) {
@@ -277,5 +213,14 @@ document.getElementById('cancelButton').addEventListener('click', () => {
     window.location.href = '/';
 });
 
-applyLanguage();
-loadConfiguration();
+(async function initialize() {
+    try {
+        await window.OCNotifierI18nReady;
+        applyLanguage();
+        await loadConfiguration();
+    } catch (error) {
+        showNotice('Language initialization failed: ' + error.message, true);
+        saveButton.disabled = true;
+        testButton.disabled = true;
+    }
+})();

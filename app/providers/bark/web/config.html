@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bark Configuration - OpenCreator Notifier</title>
+<link rel="stylesheet" href="config.css">
+</head>
+<body>
+<main>
+  <header>
+    <div class="provider-brand">
+      <img class="oc-logo" src="/opencreator-logo.png" alt="OpenCreator">
+      <div>
+        <h1>Bark</h1>
+        <p data-i18n="description">Configure a Bark notification destination</p>
+      </div>
+    </div>
+    <button type="button" class="secondary" id="backButton" data-i18n="back">Back</button>
+  </header>
+
+  <section class="card">
+    <h2 data-i18n="service_configuration">Service Configuration</h2>
+
+    <div class="field">
+      <label for="serviceName" data-i18n="service_name">Service Name</label>
+      <input id="serviceName" maxlength="80" data-i18n-placeholder="placeholder_service_name" required>
+    </div>
+
+    <div class="field">
+      <label for="serverUrl" data-i18n="server_url">Bark Server URL</label>
+      <input id="serverUrl" type="url" data-i18n-placeholder="placeholder_server_url" required>
+    </div>
+
+    <div class="field">
+      <label for="targets" data-i18n="targets">Device Key(s)</label>
+      <textarea id="targets" rows="2" required></textarea>
+      <small data-i18n="targets_hint">Separate multiple device keys with commas.</small>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="port" data-i18n="port">Port (optional)</label>
+        <input id="port" type="number" min="1" max="65535">
+      </div>
+      <div class="field">
+        <label for="user" data-i18n="username">Username (optional)</label>
+        <input id="user" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="password" data-i18n="password">Password (optional)</label>
+      <input id="password" type="password" autocomplete="new-password">
+    </div>
+
+    <h3 data-i18n="notification_options">Notification Options</h3>
+
+    <div class="grid">
+      <div class="field">
+        <label for="sound" data-i18n="sound">Sound</label>
+        <select id="sound">
+          <option value="" data-i18n="default_sound">Default</option>
+          <option>alarm.caf</option><option>anticipate.caf</option>
+          <option>bell.caf</option><option>birdsong.caf</option>
+          <option>bloom.caf</option><option>calypso.caf</option>
+          <option>chime.caf</option><option>choo.caf</option>
+          <option>descent.caf</option><option>electronic.caf</option>
+          <option>fanfare.caf</option><option>glass.caf</option>
+          <option>gotosleep.caf</option><option>healthnotification.caf</option>
+          <option>horn.caf</option><option>ladder.caf</option>
+          <option>mailsent.caf</option><option>minuet.caf</option>
+          <option>multiwayinvitation.caf</option><option>newmail.caf</option>
+          <option>newsflash.caf</option><option>noir.caf</option>
+          <option>paymentsuccess.caf</option><option>shake.caf</option>
+          <option>sherwoodforest.caf</option><option>silence.caf</option>
+          <option>spell.caf</option><option>suspense.caf</option>
+          <option>telegraph.caf</option><option>tiptoes.caf</option>
+          <option>typewriters.caf</option><option>update.caf</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="level" data-i18n="level">Notification Level</label>
+        <select id="level">
+          <option value="" data-i18n="default_level">Default</option>
+          <option value="active" data-i18n="active">Active</option>
+          <option value="timeSensitive" data-i18n="time_sensitive">Time Sensitive</option>
+          <option value="passive" data-i18n="passive">Passive</option>
+          <option value="critical" data-i18n="critical">Critical</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="volume" data-i18n="volume">Volume (0–10)</label>
+        <input id="volume" type="number" min="0" max="10">
+      </div>
+      <div class="field">
+        <label for="badge" data-i18n="badge">Badge</label>
+        <input id="badge" type="number" min="0">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="subtitle" data-i18n="subtitle">Subtitle</label>
+      <input id="subtitle">
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label for="group" data-i18n="group">Group</label>
+        <input id="group">
+      </div>
+      <div class="field">
+        <label for="category" data-i18n="category">Category</label>
+        <input id="category">
+      </div>
+    </div>
+    <div class="field">
+      <label for="click" data-i18n="click_url">Click URL</label>
+      <input id="click" type="url" data-i18n-placeholder="placeholder_click_url">
+    </div>
+    <div class="field">
+      <label for="icon" data-i18n="icon_url">Icon URL</label>
+      <input id="icon" type="url" data-i18n-placeholder="placeholder_icon_url">
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label for="action" data-i18n="action">Action</label>
+        <select id="action">
+          <option value="" data-i18n="default_action">Default</option>
+          <option value="alert" data-i18n="alert">Alert</option>
+          <option value="none" data-i18n="none">None</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="ttl" data-i18n="ttl">Time To Live (seconds)</label>
+        <input id="ttl" type="number" min="1">
+      </div>
+    </div>
+
+    <label class="check">
+      <input id="includeImage" type="checkbox" checked>
+      <span data-i18n="include_image">Include image</span>
+    </label>
+    <label class="check">
+      <input id="call" type="checkbox">
+      <span data-i18n="call">Call notification</span>
+    </label>
+    <label class="check">
+      <input id="archive" type="checkbox">
+      <span data-i18n="archive">Archive notification</span>
+    </label>
+    <label class="check">
+      <input id="enabled" type="checkbox" checked>
+      <span data-i18n="enabled">Enabled</span>
+    </label>
+
+    <div class="actions">
+      <button type="button" id="saveButton" data-i18n="save">Save Configuration</button>
+      <button type="button" class="secondary" id="testButton" disabled data-i18n="test">Test Notification</button>
+      <button type="button" class="secondary" id="cancelButton" data-i18n="cancel">Cancel</button>
+    </div>
+    <p id="notice" role="status"></p>
+  </section>
+</main>
+<script src="/providers/_shared/web/config.js"></script>
+<script src="config.js"></script>
+</body>
+</html>

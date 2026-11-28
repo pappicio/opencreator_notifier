@@ -148,7 +148,15 @@ config = {
     "services": [],
     "name": "Creator 5",
     "snapshot_url": "http://127.0.0.1:8080/?action=snapshot",
-    "send_photos": True,
+    "event_screenshots": {
+        "printer_started": False,
+        "started": True,
+        "paused": True,
+        "resumed": True,
+        "complete": True,
+        "error": True,
+        "cancelled": True
+    },
     "enable_service": True,
     "moonraker_relay_active": False,
     "events": {
@@ -184,7 +192,40 @@ def load_config():
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
             saved = json.load(f)
         with config_lock:
+            legacy_send_photos = bool(saved.get("send_photos", True))
+            event_keys = (
+                "printer_started", "started", "paused",
+                "resumed", "complete", "error", "cancelled"
+            )
+            old_screenshots = saved.get("event_screenshots", {})
+            if not isinstance(old_screenshots, dict):
+                old_screenshots = {}
+
+            migrated_screenshots = {}
+            for key in event_keys:
+                default = False if key == "printer_started" else legacy_send_photos
+                migrated_screenshots[key] = bool(
+                    old_screenshots.get(key, default)
+                )
+
+            saved.pop("send_photos", None)
+            saved["event_screenshots"] = migrated_screenshots
             config.update(saved)
+
+            event_values = config.get("events", {})
+            if not isinstance(event_values, dict):
+                event_values = {}
+            config["events"] = {
+                key: bool(event_values.get(key, True))
+                for key in event_keys
+            }
+
+            for key in event_keys:
+                if not config["events"][key]:
+                    config["event_screenshots"][key] = False
+
+            # Persist the migration without regenerating Moonraker files.
+            save_config_data_only()
     except FileNotFoundError:
         save_config()
     except Exception:
@@ -360,6 +401,42 @@ def notification_text(key, **values):
         return pack["notifications"][key].format(**values)
 
 
+def capture_snapshot(cfg):
+    """Capture a temporary webcam image under /tmp."""
+    snapshot_url = cfg.get("snapshot_url")
+    if not snapshot_url:
+        return None
+
+    snapshot_path = None
+    try:
+        req = urllib.request.Request(snapshot_url)
+        with urllib.request.urlopen(req, timeout=8) as response:
+            content_type = response.headers.get("Content-Type", "")
+            data = response.read(2 * 1024 * 1024 + 1)
+
+        if not content_type.startswith("image/") or len(data) > 2 * 1024 * 1024:
+            logger.warning("Snapshot ignored: invalid type or size")
+            return None
+
+        snapshot_path = os.path.join(
+            "/tmp",
+            "opencreator-notifier-snapshot-" + uuid.uuid4().hex + ".jpg"
+        )
+        with open(snapshot_path, "xb") as image_file:
+            image_file.write(data)
+        os.chmod(snapshot_path, 0o600)
+        return snapshot_path
+
+    except Exception:
+        logger.exception("Could not retrieve webcam snapshot")
+        if snapshot_path:
+            try:
+                os.unlink(snapshot_path)
+            except OSError:
+                pass
+        return None
+
+
 def send_notification(message, photo=False, service_ids=None):
     cfg = get_config()
     runtime_state = service_runtime_state(cfg)
@@ -381,25 +458,9 @@ def send_notification(message, photo=False, service_ids=None):
     attachment = None
     snapshot_path = None
 
-    if photo and cfg.get("send_photos") and cfg.get("snapshot_url"):
-        try:
-            req = urllib.request.Request(cfg["snapshot_url"])
-            with urllib.request.urlopen(req, timeout=8) as response:
-                content_type = response.headers.get("Content-Type", "")
-                data = response.read(2 * 1024 * 1024 + 1)
-
-            if content_type.startswith("image/") and len(data) <= 2 * 1024 * 1024:
-                snapshot_path = os.path.join(
-                    "/tmp", "opencreator-notifier-snapshot-" + uuid.uuid4().hex + ".jpg"
-                )
-                with open(snapshot_path, "wb") as image_file:
-                    image_file.write(data)
-                os.chmod(snapshot_path, 0o600)
-                attachment = snapshot_path
-            else:
-                logger.warning("Snapshot ignored: invalid type or size")
-        except Exception:
-            logger.exception("Could not retrieve webcam snapshot")
+    if photo:
+        snapshot_path = capture_snapshot(cfg)
+        attachment = snapshot_path
 
     title = cfg.get("name", "Creator 5").strip() or "Creator 5"
 
@@ -443,6 +504,9 @@ def send_event_notification(event_key, message, photo=False):
     if not isinstance(events, dict) or not bool(events.get(event_key, True)):
         logger.info("Notification event disabled: %s", event_key)
         return False
+
+    screenshots = cfg.get("event_screenshots", {})
+    photo = bool(screenshots.get(event_key, False))
     send_notification(message, photo)
     return True
 
@@ -633,7 +697,7 @@ def monitor():
                             progress=progress,
                             filename=filename
                         ),
-                        True
+                        False
                     )
                     last_progress = (progress // threshold) * threshold
 
@@ -746,47 +810,9 @@ def process_moonraker_event(payload):
 
     attachment_path = None
     try:
-        attachments = payload.get("attachments", [])
-        if attachments and cfg.get("send_photos"):
-            if not isinstance(attachments, list) or len(attachments) > 1:
-                raise ValueError("Invalid attachment list")
-
-            item = attachments[0]
-            if not isinstance(item, dict):
-                raise ValueError("Invalid attachment")
-
-            mime = str(item.get("mimetype", item.get("mime", ""))).lower()
-            encoded = item.get("data", item.get("base64", item.get("content", "")))
-            if not mime.startswith("image/") or not isinstance(encoded, str):
-                raise ValueError("Unsupported attachment type")
-
-            import base64
-            import binascii
-
-            try:
-                image_data = base64.b64decode(encoded, validate=True)
-            except (ValueError, binascii.Error):
-                raise ValueError("Invalid attachment encoding")
-
-            if not image_data or len(image_data) > 2 * 1024 * 1024:
-                raise ValueError("Attachment exceeds size limit")
-
-            extensions = {
-                "image/jpeg": ".jpg",
-                "image/png": ".png",
-                "image/gif": ".gif",
-                "image/webp": ".webp",
-            }
-            extension = extensions.get(mime.split(";", 1)[0].strip())
-            if not extension:
-                raise ValueError("Unsupported image format")
-
-            attachment_path = os.path.join(
-                DATA, "moonraker-" + uuid.uuid4().hex + extension
-            )
-            with open(attachment_path, "xb") as image_file:
-                image_file.write(image_data)
-            os.chmod(attachment_path, 0o600)
+        screenshots = cfg.get("event_screenshots", {})
+        if bool(screenshots.get(event_key, False)):
+            attachment_path = capture_snapshot(cfg)
 
         title = str(payload.get("title") or cfg.get("name", "Creator 5"))
         results = send_to_all(services, title, message, attachment_path)
@@ -1011,8 +1037,14 @@ class Handler(BaseHTTPRequestHandler):
                              for item in cfg.get("services", [])],
                 "name": cfg.get("name", "Creator 5"),
                 "snapshot_url": cfg.get("snapshot_url", ""),
-                "send_photos": bool(cfg.get("send_photos", True)),
                 "enable_service": bool(cfg.get("enable_service", True)),
+                "event_screenshots": {
+                    key: bool(cfg.get("event_screenshots", {}).get(key, False))
+                    for key in (
+                        "printer_started", "started", "paused",
+                        "resumed", "complete", "error", "cancelled"
+                    )
+                },
                 "events": {
                     key: bool(cfg.get("events", {}).get(key, True))
                     for key in (
@@ -1392,9 +1424,6 @@ class Handler(BaseHTTPRequestHandler):
                     config["snapshot_url"] = str(
                         values.get("snapshot_url", config["snapshot_url"])
                     )[:500]
-                    config["send_photos"] = bool(
-                        values.get("send_photos", config["send_photos"])
-                    )
                     config["enable_service"] = bool(
                         values.get("enable_service", config.get("enable_service", True))
                     )
@@ -1414,6 +1443,22 @@ class Handler(BaseHTTPRequestHandler):
                         key: bool(event_values.get(key, default))
                         for key, default in event_defaults.items()
                     }
+
+                    screenshot_values = values.get(
+                        "event_screenshots",
+                        config.get("event_screenshots", {})
+                    )
+                    if not isinstance(screenshot_values, dict):
+                        raise ValueError("Invalid event screenshot settings")
+
+                    config["event_screenshots"] = {
+                        key: (
+                            bool(screenshot_values.get(key, False))
+                            and config["events"][key]
+                        )
+                        for key in event_defaults
+                    }
+
                     config["progress_percent"] = max(
                         0, min(100, int(values.get("progress_percent", config["progress_percent"])))
                     )
@@ -1433,6 +1478,71 @@ class Handler(BaseHTTPRequestHandler):
 
                 self.send_json({"ok": True})
                 return
+
+            if route == "/api/test-event":
+                values = self.read_json()
+                event_key = str(values.get("event_key", "")).strip().lower()
+
+                templates = {
+                    "printer_started": (
+                        "printer_started",
+                        {"ip": local_ip_address()}
+                    ),
+                    "started": (
+                        "print_started",
+                        {"filename": "OpenCreator test print.gcode"}
+                    ),
+                    "paused": (
+                        "print_paused",
+                        {"filename": "OpenCreator test print.gcode"}
+                    ),
+                    "resumed": (
+                        "print_resumed",
+                        {"filename": "OpenCreator test print.gcode"}
+                    ),
+                    "complete": (
+                        "print_completed",
+                        {"filename": "OpenCreator test print.gcode"}
+                    ),
+                    "error": (
+                        "print_error",
+                        {
+                            "filename": "OpenCreator test print.gcode",
+                            "error": "Test error"
+                        }
+                    ),
+                    "cancelled": (
+                        "print_cancelled",
+                        {"filename": "OpenCreator test print.gcode"}
+                    )
+                }
+
+                if event_key not in templates:
+                    raise ValueError("Unsupported notification event")
+
+                cfg = get_config()
+                if not cfg.get("events", {}).get(event_key, True):
+                    raise ValueError("Notification event is disabled")
+
+                runtime_state = service_runtime_state(cfg)
+                if runtime_state not in ("soc", "tunneled"):
+                    raise ValueError(
+                        "Notifications are unavailable in the current printer mode"
+                    )
+
+                template_key, template_values = templates[event_key]
+                message = notification_text(template_key, **template_values)
+                photo = bool(
+                    cfg.get("event_screenshots", {}).get(event_key, False)
+                )
+
+                threading.Thread(
+                    target=send_notification,
+                    args=(message, photo),
+                    daemon=True
+                ).start()
+
+                return self.send_json({"ok": True, "message": "Test queued"})
 
             if route == "/api/test":
                 runtime_state = service_runtime_state()

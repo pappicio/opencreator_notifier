@@ -3,63 +3,16 @@
 const API = '/api/provider/gotify/config';
 const params = new URLSearchParams(window.location.search);
 const serviceId = params.get('service_id') || '';
-const language = params.get('lang') === 'it' ? 'it' : 'en';
 const el = id => document.getElementById(id);
 
-const TEXT = {
-  en: {
-    description: 'Configure a Gotify notification destination',
-    back: 'Back',
-    service_configuration: 'Service Configuration',
-    service_name: 'Service Name',
-    server_url: 'Server URL',
-    token: 'Application Token',
-    enabled: 'Enabled',
-    save: 'Save Configuration',
-    test: 'Test Notification',
-    cancel: 'Cancel',
-    required: 'Please complete all required fields.',
-    saving: 'Saving configuration...',
-    saved: 'Configuration saved successfully.',
-    save_first: 'Save the service before testing.',
-    queueing: 'Queueing test notification...',
-    queued: 'Test notification queued.',
-    show_token: 'Show application token',
-    hide_token: 'Hide application token',
-    error: 'Error: '
-  },
-  it: {
-    description: 'Configura una destinazione per le notifiche Gotify',
-    back: 'Indietro',
-    service_configuration: 'Configurazione servizio',
-    service_name: 'Nome servizio',
-    server_url: 'URL server',
-    token: 'Token applicazione',
-    enabled: 'Attivo',
-    save: 'Salva configurazione',
-    test: 'Invia notifica di prova',
-    cancel: 'Annulla',
-    required: 'Completa tutti i campi obbligatori.',
-    saving: 'Salvataggio configurazione...',
-    saved: 'Configurazione salvata correttamente.',
-    save_first: 'Salva il servizio prima di eseguire il test.',
-    queueing: 'Accodamento notifica di prova...',
-    queued: 'Notifica di prova accodata.',
-    show_token: 'Mostra token applicazione',
-    hide_token: 'Nascondi token applicazione',
-    error: 'Errore: '
-  }
-};
-
-const t = key => TEXT[language][key] || TEXT.en[key] || key;
+const t = key => window.OCNotifierI18n.t('provider_gotify_' + key);
 
 function applyLanguage() {
-  document.documentElement.lang = language;
+  document.documentElement.lang = window.OCNotifierI18n.language;
   document.querySelectorAll('[data-i18n]').forEach(node => {
     node.textContent = t(node.dataset.i18n);
   });
-  el('serviceName').placeholder = language === 'it'
-    ? 'es. Notifiche stampante' : 'e.g. Printer Notifications';
+  el('serviceName').placeholder = t('service_name_placeholder');
   el('toggleToken').title = t('show_token');
   el('toggleToken').setAttribute('aria-label', t('show_token'));
 }
@@ -93,7 +46,7 @@ async function loadConfiguration() {
       el('enabled').checked = data.service.enabled !== false;
       el('testButton').disabled = data.service.enabled === false;
     }
-    document.title = (serviceId ? 'Edit Gotify' : 'Add Gotify') + ' - OpenCreator Notifier';
+    document.title = t(serviceId ? 'title_edit' : 'title_add');
   } catch (error) {
     showNotice(t('error') + error.message, true);
     el('saveButton').disabled = true;
@@ -134,7 +87,7 @@ async function saveConfiguration() {
     if (!serviceId && result.service_id) {
       const next = new URLSearchParams();
       next.set('service_id', result.service_id);
-      next.set('lang', language);
+      next.set('lang', window.OCNotifierI18n.language);
       window.history.replaceState({}, '', window.location.pathname + '?' + next);
       window.location.reload();
     }
@@ -183,5 +136,14 @@ el('toggleToken').addEventListener('click', () => {
   el('toggleToken').setAttribute('aria-label', el('toggleToken').title);
 });
 
-applyLanguage();
-loadConfiguration();
+(async function initialize() {
+  try {
+    await window.OCNotifierI18nReady;
+    applyLanguage();
+    await loadConfiguration();
+  } catch (error) {
+    console.error('Language initialization failed:', error);
+    el('saveButton').disabled = true;
+    el('testButton').disabled = true;
+  }
+})();

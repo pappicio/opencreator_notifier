@@ -30,7 +30,7 @@
 
             <label for="channel" data-i18n="channel">Channel (optional)</label>
             <input id="channel" type="text" maxlength="100"
-                   placeholder="notifications" autocomplete="off">
+                   placeholder="notifications" data-i18n-placeholder="channel_placeholder" autocomplete="off">
             <p class="hint" data-i18n="channel_hint">
                 Leave empty to use the channel configured in the webhook.
             </p>
@@ -50,6 +50,7 @@
         </section>
     </main>
 
-    <script src="/providers/mattermost/web/config.js"></script>
+    <script src="/providers/_shared/web/config.js"></script>
+<script src="/providers/mattermost/web/config.js"></script>
 </body>
 </html>

@@ -21,6 +21,13 @@ textarea{min-height:75px;resize:vertical}
 .token-toggle{margin:0;min-width:46px;padding:9px}
 .check{display:flex;align-items:center;gap:10px;margin:12px 0}
 .check input{width:auto}
+.print-event-list{display:grid;gap:8px;margin-top:12px}
+.print-event-row{display:grid;grid-template-columns:minmax(170px,1fr) minmax(130px,.8fr) auto;align-items:center;gap:12px;padding:8px 10px;border:1px solid #35404d;border-radius:8px}
+.print-event-row .check{margin:0}
+.print-event-row button{margin:0}
+.print-event-row input:disabled{cursor:not-allowed}
+.print-event-row button:disabled{cursor:not-allowed;opacity:.45}
+@media(max-width:600px){.print-event-row{grid-template-columns:1fr 1fr}.print-event-row button{grid-column:1/-1}}
 button{border:0;border-radius:6px;padding:11px 17px;font-size:14px;font-weight:bold;cursor:pointer;background:#2785d7;color:white;margin:5px 7px 5px 0}
 button.secondary{background:#465363}
 .status{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -216,14 +223,42 @@ gcode:
 <h3 data-i18n="printer_notifications">Printer Notifications</h3>
 <div class="field">
   <strong data-i18n="print_events">Print Events</strong>
-  <div class="grid" id="print_event_options">
-    <label class="check"><input id="event_printer_started" type="checkbox" checked> <span data-i18n="event_printer_started">Printer started</span></label>
-    <label class="check"><input id="event_started" type="checkbox" checked> <span data-i18n="event_started">Print started</span></label>
-    <label class="check"><input id="event_paused" type="checkbox" checked> <span data-i18n="event_paused">Print paused</span></label>
-    <label class="check"><input id="event_resumed" type="checkbox" checked> <span data-i18n="event_resumed">Print resumed</span></label>
-    <label class="check"><input id="event_complete" type="checkbox" checked> <span data-i18n="event_complete">Print completed</span></label>
-    <label class="check"><input id="event_error" type="checkbox" checked> <span data-i18n="event_error">Print error</span></label>
-    <label class="check"><input id="event_cancelled" type="checkbox" checked> <span data-i18n="event_cancelled">Print cancelled</span></label>
+  <div id="print_event_options" class="print-event-list">
+    <div class="print-event-row">
+      <label class="check"><input id="event_printer_started" type="checkbox" checked onchange="updatePrintEventControls('printer_started')"> <span data-i18n="event_printer_started">Printer started</span></label>
+      <label class="check"><input id="screenshot_printer_started" type="checkbox"> <span data-i18n="screenshot">Screenshot</span></label>
+      <button type="button" class="secondary" onclick="testPrintEvent('printer_started')" data-i18n="test">Test</button>
+    </div>
+    <div class="print-event-row">
+      <label class="check"><input id="event_started" type="checkbox" checked onchange="updatePrintEventControls('started')"> <span data-i18n="event_started">Print started</span></label>
+      <label class="check"><input id="screenshot_started" type="checkbox"> <span data-i18n="screenshot">Screenshot</span></label>
+      <button type="button" class="secondary" onclick="testPrintEvent('started')" data-i18n="test">Test</button>
+    </div>
+    <div class="print-event-row">
+      <label class="check"><input id="event_paused" type="checkbox" checked onchange="updatePrintEventControls('paused')"> <span data-i18n="event_paused">Print paused</span></label>
+      <label class="check"><input id="screenshot_paused" type="checkbox"> <span data-i18n="screenshot">Screenshot</span></label>
+      <button type="button" class="secondary" onclick="testPrintEvent('paused')" data-i18n="test">Test</button>
+    </div>
+    <div class="print-event-row">
+      <label class="check"><input id="event_resumed" type="checkbox" checked onchange="updatePrintEventControls('resumed')"> <span data-i18n="event_resumed">Print resumed</span></label>
+      <label class="check"><input id="screenshot_resumed" type="checkbox"> <span data-i18n="screenshot">Screenshot</span></label>
+      <button type="button" class="secondary" onclick="testPrintEvent('resumed')" data-i18n="test">Test</button>
+    </div>
+    <div class="print-event-row">
+      <label class="check"><input id="event_complete" type="checkbox" checked onchange="updatePrintEventControls('complete')"> <span data-i18n="event_complete">Print completed</span></label>
+      <label class="check"><input id="screenshot_complete" type="checkbox"> <span data-i18n="screenshot">Screenshot</span></label>
+      <button type="button" class="secondary" onclick="testPrintEvent('complete')" data-i18n="test">Test</button>
+    </div>
+    <div class="print-event-row">
+      <label class="check"><input id="event_error" type="checkbox" checked onchange="updatePrintEventControls('error')"> <span data-i18n="event_error">Print error</span></label>
+      <label class="check"><input id="screenshot_error" type="checkbox"> <span data-i18n="screenshot">Screenshot</span></label>
+      <button type="button" class="secondary" onclick="testPrintEvent('error')" data-i18n="test">Test</button>
+    </div>
+    <div class="print-event-row">
+      <label class="check"><input id="event_cancelled" type="checkbox" checked onchange="updatePrintEventControls('cancelled')"> <span data-i18n="event_cancelled">Print cancelled</span></label>
+      <label class="check"><input id="screenshot_cancelled" type="checkbox"> <span data-i18n="screenshot">Screenshot</span></label>
+      <button type="button" class="secondary" onclick="testPrintEvent('cancelled')" data-i18n="test">Test</button>
+    </div>
   </div>
 </div>
 <div class="grid">
@@ -248,7 +283,6 @@ gcode:
     <input id="snapshot_url" value="http://127.0.0.1:8080/?action=snapshot">
   </div>
 </div>
-<label class="check"><input id="send_photos" type="checkbox" checked> <span data-i18n="snapshots">Attach webcam snapshots to print events</span></label>
 <label class="check"><input id="enable_service" type="checkbox" checked> <span data-i18n="enable_service">Enable notification service (SOC mode only)</span></label>
 <div>
   <button type="button" onclick="saveConfig()" data-i18n="save">Save Configuration</button>
@@ -625,6 +659,38 @@ async function testAllServices() {
   }
 }
 
+const printEventKeys = [
+  'printer_started','started','paused','resumed',
+  'complete','error','cancelled'
+];
+
+function updatePrintEventControls(key) {
+  const enabled = document.getElementById('event_' + key).checked;
+  const screenshot = document.getElementById('screenshot_' + key);
+  const testButton = document.querySelector(
+    `button[onclick="testPrintEvent('${key}')"]`
+  );
+
+  screenshot.disabled = !enabled;
+  if (!enabled) screenshot.checked = false;
+  testButton.disabled = !enabled;
+}
+
+async function testPrintEvent(eventKey) {
+  try {
+    await api('/api/test-event', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({event_key:eventKey})
+    });
+    document.getElementById('notice').textContent =
+      tr('test_event_queued', 'Event test notification queued.');
+  } catch(error) {
+    document.getElementById('notice').textContent =
+      tr('error_prefix', 'Error: ') + error.message;
+  }
+}
+
 async function loadConfig() {
   const c = await api('/api/config');
   await refreshLanguages(c.language || 'en');
@@ -635,12 +701,16 @@ async function loadConfig() {
   for (const key of ['name','snapshot_url','progress_percent','poll_interval','web_refresh_interval'])
     document.getElementById(key).value = c[key] ?? '';
 
-  for (const key of ['send_photos','enable_service'])
-    document.getElementById(key).checked = !!c[key];
+  document.getElementById('enable_service').checked = !!c.enable_service;
 
   const events = c.events || {};
-  for (const key of ['printer_started','started','paused','resumed','complete','error','cancelled'])
+  const screenshots = c.event_screenshots || {};
+  for (const key of printEventKeys) {
     document.getElementById('event_' + key).checked = events[key] !== false;
+    document.getElementById('screenshot_' + key).checked =
+      events[key] !== false && screenshots[key] === true;
+    updatePrintEventControls(key);
+  }
 
   renderServices();
   configureStatusTimer(c.web_refresh_interval);
@@ -654,11 +724,18 @@ async function saveConfig() {
     web_refresh_interval: Math.max(2, Math.min(30,
       Math.floor(Number(document.getElementById('web_refresh_interval').value) || 3))),
     snapshot_url: document.getElementById('snapshot_url').value,
-    send_photos: document.getElementById('send_photos').checked,
     enable_service: document.getElementById('enable_service').checked,
     events: Object.fromEntries(
-      ['printer_started','started','paused','resumed','complete','error','cancelled']
-        .map(key => [key, document.getElementById('event_' + key).checked])
+      printEventKeys.map(key => [
+        key, document.getElementById('event_' + key).checked
+      ])
+    ),
+    event_screenshots: Object.fromEntries(
+      printEventKeys.map(key => [
+        key,
+        document.getElementById('event_' + key).checked &&
+          document.getElementById('screenshot_' + key).checked
+      ])
     ),
     language: currentLanguage
   };

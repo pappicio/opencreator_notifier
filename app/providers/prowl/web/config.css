@@ -1,0 +1,144 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #171b22;
+    color: #e7eaf0;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+.provider-card {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 24px;
+    background: #222832;
+    border: 1px solid #343d49;
+    border-radius: 12px;
+}
+
+h1 {
+    margin: 0 0 8px;
+    font-size: 23px;
+}
+
+header p {
+    margin: 0 0 24px;
+    color: #aab4c2;
+    line-height: 1.5;
+}
+
+form > label:not(.enabled-row) {
+    display: block;
+    margin: 17px 0 7px;
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    color: #edf1f7;
+    background: #171c24;
+    border: 1px solid #465160;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid #568bd6;
+    border-color: #568bd6;
+}
+
+.secret-field {
+    display: flex;
+    gap: 8px;
+}
+
+.secret-field input {
+    flex: 1;
+    min-width: 0;
+}
+
+small {
+    display: block;
+    margin-top: 6px;
+    color: #aab4c2;
+}
+
+.enabled-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 22px;
+    font-weight: 600;
+}
+
+.enabled-row input {
+    width: 17px;
+    height: 17px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+button {
+    min-height: 40px;
+    padding: 9px 15px;
+    color: #fff;
+    background: #2876c7;
+    border: 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button.secondary {
+    color: #e7eaf0;
+    background: #3a4553;
+}
+
+button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+#notice {
+    min-height: 22px;
+    margin-top: 17px;
+    overflow-wrap: anywhere;
+}
+
+#notice.success {
+    color: #7ed69a;
+}
+
+#notice.error {
+    color: #ff8585;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .provider-card {
+        padding: 17px;
+    }
+
+    .actions button {
+        flex: 1 1 100%;
+    }
+}

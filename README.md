@@ -25,13 +25,36 @@ The plugin integrates with Moonraker and Klipper while keeping its application, 
 
 ## Notifications
 
-OpenCreator Notifier uses Apprise as its notification backend.
+OpenCreator Notifier uses **Apprise** as its notification backend.
 
-Apprise provides a unified notification interface and supports many notification services. Integrated notification providers: Discord, Email (SMTP), Google Chat, Gotify, Matrix, Mattermost, Microsoft Teams, ntfy, Pushover, Slack and Telegram.
+Apprise provides a unified notification interface with support for a wide range of notification services.
+
+**Currently integrated notification providers:**
+
+- Bark
+- Discord
+- Email (SMTP)
+- Google Chat
+- Gotify
+- Home Assistant
+- Matrix
+- Mattermost
+- Microsoft Teams
+- ntfy
+- Prowl
+- Pushover
+- Pushsafer
+- Slack
+- Telegram
+
+Additional notification providers will be added over time, continuously expanding the range of supported services.
 
 The notification system is configured through the plugin's web interface.
 
-Notification preferences allow the user to select which printer events should generate notifications and configure the available notification options.
+Notification preferences allow users to select which printer events should trigger notifications and configure the available options for each notification provider.
+
+Depending on the number of configured providers, notification frequency and service usage, the notification system may increase overall system resource consumption.
+
 
 ---
 
